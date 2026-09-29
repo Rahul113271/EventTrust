@@ -1,0 +1,18 @@
+# Environment variables
+.env
+
+# Python bytecode and caches
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+*.pyc
+
+# Local SQLite (keep existing if tracked, ignore if needed)
+*.sqlite3-journal
+
+# Editor and OS files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

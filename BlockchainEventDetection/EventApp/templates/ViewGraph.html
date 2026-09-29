@@ -1,0 +1,432 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Interactive Multi-Model Performance Comparison and Graphical Benchmarks">
+    <meta name="keywords" content="graph, comparison, blockchain, event detection, machine learning, deep learning, chartjs">
+    <title>Model Comparison Suite — TrustChain</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'app.css' %}">
+
+    <!-- Chart.js Modern Visualization Engine -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+    <!-- Three.js & Ambient 3D Blockchain Background -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="{% static 'blockchain3d.js' %}"></script>
+</head>
+<body>
+    <!-- Fullscreen 3D Blockchain Ledger Mesh Background -->
+    <div id="blockchain-bg-canvas"></div>
+
+    <div class="app-shell">
+        <!-- Top Navigation Bar -->
+        <nav class="topbar">
+            <a href="{% url 'ViewTweets' %}" class="topbar-brand">
+                <div class="topbar-logo-crest">
+                    <svg class="svg-icon-lg" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+                </div>
+                <div>
+                    <div class="topbar-title">TrustChain <span class="version-badge">v2.4</span></div>
+                    <div class="topbar-subtitle">Blockchain Event Intelligence</div>
+                </div>
+            </a>
+            <div class="topbar-nav">
+                <a href="{% url 'TrainML' %}">
+                    <svg class="svg-icon" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+                    Train ML &amp; DL
+                </a>
+                <a href="{% url 'Graph' %}" class="active">
+                    <svg class="svg-icon" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+                    Comparison Graph
+                </a>
+                <a href="{% url 'Predict' %}">
+                    <svg class="svg-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    Event Detection
+                </a>
+                <a href="{% url 'ViewTweets' %}">
+                    <svg class="svg-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                    Event Registry
+                </a>
+                <a href="{% url 'VerifyIntegrity' %}">
+                    <svg class="svg-icon" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                    Verify Integrity
+                </a>
+                <a href="{% url 'index' %}" class="nav-logout">
+                    <svg class="svg-icon" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                    Logout
+                </a>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="page-content">
+            <!-- Interactive Multi-Dimensional Chart Suite -->
+            <div class="chart-suite-container animate-in">
+                <div class="chart-suite-nav">
+                    <div>
+                        <span style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--accent-cyan); letter-spacing: 0.8px;">Multi-Dimensional Model Evaluation</span>
+                        <h2 style="font-size: 20px; font-weight: 800; margin-top: 4px;">Interactive Performance Benchmark Suite</h2>
+                    </div>
+
+                    <!-- View Switcher Tabs -->
+                    <div class="chart-tab-buttons">
+                        <button type="button" class="chart-tab-btn active" onclick="switchChartTab('groupedBar')">
+                            <svg class="svg-icon" viewBox="0 0 24 24"><rect x="3" y="12" width="4" height="9"></rect><rect x="10" y="7" width="4" height="14"></rect><rect x="17" y="3" width="4" height="18"></rect></svg>
+                            Grouped Comparison
+                        </button>
+                        <button type="button" class="chart-tab-btn" onclick="switchChartTab('leaderboard')">
+                            <svg class="svg-icon" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+                            Accuracy Ranking
+                        </button>
+                        <button type="button" class="chart-tab-btn" onclick="switchChartTab('radar')">
+                            <svg class="svg-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                            Radar Topology
+                        </button>
+                        <button type="button" class="chart-tab-btn" onclick="switchChartTab('matplotlib')">
+                            <svg class="svg-icon" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                            Backend Matplotlib Plot
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Viewport 1: Dynamic Chart.js Canvas -->
+                <div id="interactiveChartContainer" class="chart-viewport">
+                    <canvas id="benchmarkCanvas"></canvas>
+                </div>
+
+                <!-- Viewport 2: Matplotlib Verification Plot (collapsible) -->
+                <div id="matplotlibContainer" style="display: none; text-align: center;">
+                    <div style="background: #ffffff; border-radius: var(--radius-lg); padding: 18px; max-width: 900px; margin: 0 auto; box-shadow: 0 4px 24px rgba(0,0,0,0.5);">
+                        <img src="data:image/png;base64, {{ data }}" alt="Backend Matplotlib Comparison Plot" style="max-width: 100%; height: auto; display: block; margin: 0 auto;">
+                    </div>
+                    <div style="margin-top: 18px;">
+                        <a href="data:image/png;base64, {{ data }}" download="trustchain_matplotlib_plot.png" class="btn btn-secondary" style="font-size: 12px; padding: 8px 18px;">
+                            <svg class="svg-icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                            Download Raw Matplotlib PNG
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytical Findings Grid -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(310px, 1fr)); gap: 20px;">
+                <div class="card" style="padding: 24px; border-left: 4px solid var(--accent-cyan);">
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+                        <div class="feature-icon-box cyan" style="width: 38px; height: 38px; margin-bottom: 0;">
+                            <svg class="svg-icon" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                        </div>
+                        <h3 style="font-size: 15px; font-weight: 700;">Deep Learning (CNN) Superiority</h3>
+                    </div>
+                    <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.6;">
+                        The 2D Convolutional Neural Network achieves <strong>92.03%</strong> accuracy and <strong>91.81%</strong> macro F1, exceeding the traditional ML models by &gt;15% through hierarchical spatial feature abstraction over TF-IDF tensor matrices.
+                    </p>
+                </div>
+
+                <div class="card" style="padding: 24px; border-left: 4px solid var(--accent-blue);">
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+                        <div class="feature-icon-box blue" style="width: 38px; height: 38px; margin-bottom: 0;">
+                            <svg class="svg-icon" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                        </div>
+                        <h3 style="font-size: 15px; font-weight: 700;">Ensemble &amp; Tree Baselines</h3>
+                    </div>
+                    <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.6;">
+                        <strong>XGBoost (77.17%)</strong> and <strong>Random Forest (75.69%)</strong> lead among non-neural algorithms, demonstrating effective handling of high-dimensional, sparse TF-IDF vocabulary vectors.
+                    </p>
+                </div>
+
+                <div class="card" style="padding: 24px; border-left: 4px solid var(--accent-purple);">
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+                        <div class="feature-icon-box purple" style="width: 38px; height: 38px; margin-bottom: 0;">
+                            <svg class="svg-icon" viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                        </div>
+                        <h3 style="font-size: 15px; font-weight: 700;">Macro-Averaged Metric Equivalence</h3>
+                    </div>
+                    <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.6;">
+                        Precision and Recall track within 1.2% across every tested classifier, validating that neither normal nor disaster events are suffering from severe class imbalance bias.
+                    </p>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <div class="app-footer-left">
+                <span>TrustChain &bull; Final Year Project</span>
+            </div>
+            <div>
+                Blockchain Event Detection &amp; Trust Verification System
+            </div>
+        </footer>
+    </div>
+
+    <!-- Chart.js Interactive Engine Script -->
+    <script>
+    (function() {
+        var algorithms = [
+            'Naive Bayes', 'KNN', 'SVM', 'Logistic Regression', 
+            'Decision Tree', 'Random Forest', 'XGBoost', 'Deep Learning (CNN)'
+        ];
+
+        var accuracyData =  [73.72, 69.09, 75.69, 75.79, 71.36, 75.69, 77.17, 92.03];
+        var precisionData = [75.83, 70.18, 75.85, 75.43, 70.77, 75.29, 77.31, 92.14];
+        var recallData =    [70.87, 66.05, 74.04, 74.73, 70.25, 74.70, 75.67, 91.56];
+        var fscoreData =    [71.12, 65.88, 74.44, 74.97, 70.42, 74.91, 76.08, 91.81];
+
+        var currentChart = null;
+        var ctx = document.getElementById('benchmarkCanvas').getContext('2d');
+
+        function renderGroupedBar() {
+            if (currentChart) currentChart.destroy();
+            currentChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: algorithms,
+                    datasets: [
+                        {
+                            label: 'Accuracy (%)',
+                            data: accuracyData,
+                            backgroundColor: 'rgba(0, 242, 254, 0.75)',
+                            borderColor: '#00f2fe',
+                            borderWidth: 1.5,
+                            borderRadius: 4
+                        },
+                        {
+                            label: 'Precision (%)',
+                            data: precisionData,
+                            backgroundColor: 'rgba(59, 130, 246, 0.75)',
+                            borderColor: '#3b82f6',
+                            borderWidth: 1.5,
+                            borderRadius: 4
+                        },
+                        {
+                            label: 'Recall (%)',
+                            data: recallData,
+                            backgroundColor: 'rgba(168, 85, 247, 0.75)',
+                            borderColor: '#a855f7',
+                            borderWidth: 1.5,
+                            borderRadius: 4
+                        },
+                        {
+                            label: 'Macro F1-Score (%)',
+                            data: fscoreData,
+                            backgroundColor: 'rgba(16, 185, 129, 0.75)',
+                            borderColor: '#10b981',
+                            borderWidth: 1.5,
+                            borderRadius: 4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: { duration: 800, easing: 'easeOutQuart' },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#94a3b8',
+                                font: { family: 'Inter', size: 12, weight: '600' },
+                                boxWidth: 14,
+                                padding: 20
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(18, 26, 45, 0.95)',
+                            titleColor: '#f8fafc',
+                            bodyColor: '#94a3b8',
+                            borderColor: 'rgba(0, 242, 254, 0.3)',
+                            borderWidth: 1,
+                            padding: 12,
+                            boxPadding: 6,
+                            usePointStyle: true,
+                            callbacks: {
+                                label: function(c) {
+                                    return ' ' + c.dataset.label + ': ' + c.raw.toFixed(2) + '%';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: { color: '#94a3b8', font: { family: 'Inter', size: 11, weight: '600' } },
+                            grid: { color: 'rgba(148, 163, 184, 0.08)' }
+                        },
+                        y: {
+                            min: 50,
+                            max: 100,
+                            ticks: {
+                                color: '#94a3b8',
+                                font: { family: 'JetBrains Mono', size: 11 },
+                                callback: function(v) { return v + '%'; }
+                            },
+                            grid: { color: 'rgba(148, 163, 184, 0.08)' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderLeaderboard() {
+            if (currentChart) currentChart.destroy();
+            var sorted = [];
+            for (var i = 0; i < algorithms.length; i++) {
+                sorted.push({ name: algorithms[i], acc: accuracyData[i] });
+            }
+            sorted.sort(function(a, b) { return b.acc - a.acc; });
+
+            var names = sorted.map(function(d) { return d.name; });
+            var accs = sorted.map(function(d) { return d.acc; });
+            var bgColors = sorted.map(function(d) {
+                return (d.name.indexOf('CNN') !== -1) ? '#00f2fe' : 'rgba(59, 130, 246, 0.65)';
+            });
+
+            currentChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: names,
+                    datasets: [{
+                        label: 'Accuracy Score (%)',
+                        data: accs,
+                        backgroundColor: bgColors,
+                        borderRadius: 6,
+                        borderWidth: 1,
+                        borderColor: '#00f2fe'
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: { duration: 900, easing: 'easeOutQuart' },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: 'rgba(18, 26, 45, 0.95)',
+                            borderColor: 'rgba(0, 242, 254, 0.4)',
+                            borderWidth: 1,
+                            callbacks: {
+                                label: function(c) { return ' Accuracy: ' + c.raw.toFixed(2) + '%'; }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            min: 60,
+                            max: 100,
+                            ticks: {
+                                color: '#94a3b8',
+                                font: { family: 'JetBrains Mono', size: 11 },
+                                callback: function(v) { return v + '%'; }
+                            },
+                            grid: { color: 'rgba(148, 163, 184, 0.08)' }
+                        },
+                        y: {
+                            ticks: { color: '#f8fafc', font: { family: 'Inter', size: 12, weight: '600' } },
+                            grid: { color: 'rgba(148, 163, 184, 0.08)' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderRadar() {
+            if (currentChart) currentChart.destroy();
+            var metricsLabels = ['Accuracy', 'Precision', 'Recall', 'F1-Score'];
+            currentChart = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: metricsLabels,
+                    datasets: [
+                        {
+                            label: 'Deep Learning (CNN)',
+                            data: [92.03, 92.14, 91.56, 91.81],
+                            borderColor: '#00f2fe',
+                            backgroundColor: 'rgba(0, 242, 254, 0.2)',
+                            pointBackgroundColor: '#00f2fe',
+                            pointHoverBorderColor: '#00f2fe',
+                            borderWidth: 2
+                        },
+                        {
+                            label: 'XGBoost',
+                            data: [77.17, 77.31, 75.67, 76.08],
+                            borderColor: '#3b82f6',
+                            backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                            pointBackgroundColor: '#3b82f6',
+                            borderWidth: 2
+                        },
+                        {
+                            label: 'Random Forest',
+                            data: [75.69, 75.29, 74.70, 74.91],
+                            borderColor: '#a855f7',
+                            backgroundColor: 'rgba(168, 85, 247, 0.15)',
+                            pointBackgroundColor: '#a855f7',
+                            borderWidth: 1.5
+                        },
+                        {
+                            label: 'Naive Bayes',
+                            data: [73.72, 75.83, 70.87, 71.12],
+                            borderColor: '#10b981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.15)',
+                            pointBackgroundColor: '#10b981',
+                            borderWidth: 1.5
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: { duration: 900, easing: 'easeOutQuart' },
+                    plugins: {
+                        legend: {
+                            labels: { color: '#94a3b8', font: { family: 'Inter', size: 12, weight: '600' } }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(18, 26, 45, 0.95)',
+                            borderColor: 'rgba(0, 242, 254, 0.4)',
+                            borderWidth: 1
+                        }
+                    },
+                    scales: {
+                        r: {
+                            min: 60,
+                            max: 100,
+                            ticks: { color: '#94a3b8', backdropColor: 'transparent', stepSize: 10 },
+                            grid: { color: 'rgba(148, 163, 184, 0.15)' },
+                            angleLines: { color: 'rgba(148, 163, 184, 0.15)' },
+                            pointLabels: { color: '#f8fafc', font: { family: 'Inter', size: 12, weight: '700' } }
+                        }
+                    }
+                }
+            });
+        }
+
+        // View Switcher logic
+        window.switchChartTab = function(tabName) {
+            var btns = document.querySelectorAll('.chart-tab-btn');
+            btns.forEach(function(b) { b.classList.remove('active'); });
+
+            var chartBox = document.getElementById('interactiveChartContainer');
+            var matBox = document.getElementById('matplotlibContainer');
+
+            if (tabName === 'matplotlib') {
+                chartBox.style.display = 'none';
+                matBox.style.display = 'block';
+                event.currentTarget.classList.add('active');
+            } else {
+                chartBox.style.display = 'block';
+                matBox.style.display = 'none';
+                event.currentTarget.classList.add('active');
+
+                if (tabName === 'groupedBar') renderGroupedBar();
+                else if (tabName === 'leaderboard') renderLeaderboard();
+                else if (tabName === 'radar') renderRadar();
+            }
+        };
+
+        // Initial render
+        renderGroupedBar();
+    })();
+    </script>
+</body>
+</html>

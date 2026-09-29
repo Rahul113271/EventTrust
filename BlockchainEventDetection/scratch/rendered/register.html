@@ -1,0 +1,130 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="User Registration for Blockchain-Based Event Detection and Trust Verification">
+    <meta name="keywords" content="registration, signup, blockchain, event detection">
+    <title>Sign Up — TrustChain</title>
+    <link rel="stylesheet" type="text/css" href="/static/app.css">
+
+    <!-- Form Validation Script -->
+    <script language="javascript">
+    function validate(formObj) {
+        // Username validation
+        if(formObj.t1.value.length==0) {
+            alert("Please Enter User ID");
+            formObj.t1.focus();
+            return false;
+        }
+        
+        // Password validation
+        if(formObj.t2.value.length==0) {
+            alert("Please Enter Password");
+            formObj.t2.focus();
+            return false;
+        }
+        
+        // Contact number validation
+        if(formObj.t3.value.length==0) {
+            alert("Please Enter Contact No");
+            formObj.t3.focus();
+            return false;
+        }
+        if(isNaN(formObj.t3.value)) {
+            window.alert("Please enter valid mobile no");
+            formObj.t3.focus();
+            return false;
+        }
+        
+        // Email validation
+        if(formObj.t4.value.length==0) {
+            alert("Please Enter Email ID");
+            formObj.t4.focus();
+            return false;
+        }
+        var filter = /^([a-zA-Z0-9_\.\-])+\@(gmail+\.)+(com)+$/;
+        if (!filter.test(formObj.t4.value)) {
+            window.alert('enter a valid email address');
+            formObj.t4.focus();
+            return false;
+        }
+        
+        // Address validation
+        if(formObj.t5.value.length==0) {
+            alert("Please Enter Address");
+            formObj.t5.focus();
+            return false;
+        }
+        
+        return true;
+    }
+    </script>
+</head>
+<body>
+    <div class="app-shell">
+        <!-- Top Navigation -->
+        <nav class="topbar">
+            <div class="topbar-brand">
+                <div class="topbar-logo">⛓</div>
+                <div>
+                    <div class="topbar-title">TrustChain</div>
+                    <div class="topbar-subtitle">Blockchain Event Intelligence</div>
+                </div>
+            </div>
+            <div class="topbar-nav">
+                <a href="/index.html">🏠 Home</a>
+                <a href="/UserLogin.html">🔐 Login</a>
+                <a href="/Register.html" class="active">📝 Sign Up</a>
+            </div>
+        </nav>
+
+        <!-- Registration Form -->
+        <div class="auth-wrapper">
+            <div class="auth-card animate-in">
+                <div style="text-align:center; margin-bottom: 20px;">
+                    <div style="width:56px;height:56px;border-radius:14px;background:linear-gradient(135deg,var(--accent-blue),var(--accent-purple));display:inline-flex;align-items:center;justify-content:center;font-size:26px;color:#fff;">📝</div>
+                </div>
+                <h2>Create Account</h2>
+                <p class="auth-sub">Register to access the blockchain event detection platform</p>
+
+                <!-- Display error/success messages -->
+                
+
+                <form name="f1" method="post" action="/RegisterAction" onsubmit="return validate(this);">
+                    <input type="hidden" name="csrfmiddlewaretoken" value="sIfCQUMliBPEcY6dhfa35kbhcIItk9HMIFvE7ek2Clv5R9PmkbloQSsgSA5JuIgu">
+                    <div class="form-group">
+                        <label class="form-label">Username</label>
+                        <input type="text" name="t1" class="form-input" placeholder="Choose a username">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Password</label>
+                        <input type="password" name="t2" class="form-input" placeholder="Create a password">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Contact Number</label>
+                        <input type="text" name="t3" class="form-input" placeholder="Enter mobile number">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Email Address</label>
+                        <input type="text" name="t4" class="form-input" placeholder="Enter Gmail address">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Address</label>
+                        <input type="text" name="t5" class="form-input" placeholder="Enter your address">
+                    </div>
+                    <button type="submit" class="btn btn-primary form-submit-btn" style="width:100%;">Create Account →</button>
+                </form>
+                <div class="auth-footer">
+                    Already have an account? <a href="/UserLogin.html">Sign in</a>
+                </div>
+            </div>
+        </div>
+
+        <footer class="app-footer">
+            Blockchain-Based Event Detection & Trust Verification
+        </footer>
+    </div>
+</body>
+</html>

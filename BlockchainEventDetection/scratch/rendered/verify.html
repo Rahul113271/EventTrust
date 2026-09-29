@@ -1,0 +1,47 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="User Dashboard for Blockchain-Based Event Detection System">
+    <meta name="keywords" content="dashboard, blockchain, event detection, trust verification">
+    <title>Dashboard — TrustChain</title>
+    <link rel="stylesheet" type="text/css" href="/static/app.css">
+</head>
+<body>
+    <div class="app-shell">
+        <!-- Top Navigation -->
+        <nav class="topbar">
+            <div class="topbar-brand">
+                <div class="topbar-logo">⛓</div>
+                <div>
+                    <div class="topbar-title">TrustChain</div>
+                    <div class="topbar-subtitle">Blockchain Event Intelligence</div>
+                </div>
+            </div>
+            <div class="topbar-nav">
+                <a href="/TrainML">📊 Train ML & DL</a>
+                <a href="/Graph">📈 Comparison Graph</a>
+                <a href="/Predict.html">🔍 Event Detection</a>
+                <a href="/ViewTweets">📋 Event Registry</a>
+                <a href="/VerifyIntegrity">🛡 Verify Integrity</a>
+                <a href="/index.html" class="nav-logout">⏻ Logout</a>
+            </div>
+        </nav>
+
+        <!-- Page Content -->
+        <main class="page-content">
+            <div class="dynamic-content animate-in">
+                
+                    <h4><b>Blockchain Event Trust Verification & Data Integrity</b></h4><br/><table border=1 align=center width=85% cellpadding=8 style="background-color: #fdfdfd; border-collapse: collapse;"><tr><td width=35%><font size=3 color=black><b>Event ID</b></font></td><td><font size=3 color=black><b>#5</b> <font size=2 color=gray>(Ethereum Registry & Supabase)</font></font></td></tr><tr><td width=35%><font size=3 color=black><b>Data Integrity</b></font></td><td><font size=4 color="green"><b>&#10004; VERIFIED</b></font></td></tr><tr><td><font size=3 color=black><b>Trust Score</b></font></td><td><font size=4 color="green"><b>100 / 100</b></font> <font size=2 color=gray>(Integrity: 50 | DL Confidence: 40 max | Event Context: 10 max)</font></td></tr><tr><td><font size=3 color=black><b>Classification</b></font></td><td><font size=3 color=black><b>Disaster Event Detected</b></font></td></tr><tr><td><font size=3 color=black><b>Confidence</b></font></td><td><font size=3 color=black><b>100.0%</b></font></td></tr><tr><td><font size=3 color=black><b>Latest Stored Post</b></font></td><td><font size=2 color=black><i>"PHASE9 EMERGENCY: Severe thunderstorm warning with high winds and flash flooding detected."</i> (by: <b>Anonymous</b> on 2026-09-29)</font></td></tr><tr><td><font size=3 color=black><b>Blockchain Hash</b></font></td><td><font size=2 color=black><code style="word-break: break-all;">0xce14178d90bfc6941db67ba604a94d6778e6cc286c95566a59164a266b6fc572</code></font></td></tr><tr><td><font size=3 color=black><b>Local Hash</b></font></td><td><font size=2 color=black><code style="word-break: break-all;">0xce14178d90bfc6941db67ba604a94d6778e6cc286c95566a59164a266b6fc572</code></font></td></tr><tr><td><font size=3 color=black><b>Verification Message</b></font></td><td><font size=2 color=black>DATA INTEGRITY VERIFIED - Supabase SHA-256 hash matches Ethereum on-chain proof for Event #5</font></td></tr></table><br/><table border=1 align=center width=85% cellpadding=10 style="background-color: #fff9f9; border: 2px dashed #c62828; border-collapse: collapse;"><tr><td colspan=2 align=center style="background-color: #ffebee;"><font size=3 color="#b71c1c"><b>🔬 DEMO / TEST MODE &mdash; Event-Specific Tamper Simulation</b></font><br/><font size=2 color="#333"><b>Target Event ID: #5</b> (Ethereum Registry & Supabase)</font><br/><font size=2 color="#555">Demonstrate smart contract tamper detection and cryptographic integrity verification directly from the browser without modifying contract code or ML model.</font></td></tr><tr><td width=50% align=center style="padding: 14px;"><form method="POST" action="/SimulateTamper" style="margin: 0;" onsubmit="return confirm('DEMO MODE: This will alter the cryptographic proof hash on Ethereum for Event #5 to a tampered hash. The integrity check will fail and trust score will become 0. Proceed?');"><input type="hidden" name="event_id" value="5"><input type="submit" value="⚠️ Simulate Blockchain Tampering" style="background-color: #c62828; color: #ffffff; padding: 10px 18px; font-size: 13px; font-weight: bold; border: 1px solid #8e0000; border-radius: 4px; cursor: pointer;"></form><br/><font size=2 color="#666">Alters <code>dataHash</code> on Ethereum for Event #5 via <code>simulateEventTampering()</code> and resets on-chain trust score to 0.</font></td><td width=50% align=center style="padding: 14px;"><form method="POST" action="/RestoreEvent" style="margin: 0;"><input type="hidden" name="event_id" value="5"><input type="submit" value="🔄 Restore Original Event" style="background-color: #2e7d32; color: #ffffff; padding: 10px 18px; font-size: 13px; font-weight: bold; border: 1px solid #1b5e20; border-radius: 4px; cursor: pointer;"></form><br/><font size=2 color="#666">Restores the authentic SHA-256 hash and trust score for Event #5 via <code>restoreEvent()</code>.</font></td></tr></table><br/><br/><br/><br/>
+                
+            </div>
+        </main>
+
+        <footer class="app-footer">
+            Blockchain-Based Event Detection & Trust Verification
+        </footer>
+    </div>
+</body>
+</html>

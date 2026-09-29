@@ -1,0 +1,86 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Event Detection and Prediction using Blockchain">
+    <meta name="keywords" content="blockchain, event detection, prediction, NLP, machine learning">
+    <title>Event Detection — TrustChain</title>
+    <link rel="stylesheet" type="text/css" href="/static/app.css">
+
+    <!-- Form Validation Script -->
+    <script language="javascript">
+    function validate(formObj) {
+        // Validate tweet input is not empty
+        if(formObj.t1.value.length==0) {
+            alert("Please Enter Event Post");
+            formObj.t1.focus();
+            return false;
+        }
+        return true;
+    }
+    </script>
+</head>
+<body>
+    <div class="app-shell">
+        <!-- Top Navigation -->
+        <nav class="topbar">
+            <div class="topbar-brand">
+                <div class="topbar-logo">⛓</div>
+                <div>
+                    <div class="topbar-title">TrustChain</div>
+                    <div class="topbar-subtitle">Blockchain Event Intelligence</div>
+                </div>
+            </div>
+            <div class="topbar-nav">
+                <a href="/TrainML">📊 Train ML & DL</a>
+                <a href="/Graph">📈 Comparison Graph</a>
+                <a href="/Predict.html" class="active">🔍 Event Detection</a>
+                <a href="/ViewTweets">📋 Event Registry</a>
+                <a href="/VerifyIntegrity">🛡 Verify Integrity</a>
+                <a href="/index.html" class="nav-logout">⏻ Logout</a>
+            </div>
+        </nav>
+
+        <!-- Event Detection Form -->
+        <main class="page-content">
+            <div style="max-width: 700px; margin: 0 auto;">
+                <div class="card animate-in">
+                    <div class="card-header">
+                        <div class="card-header-icon cyan">🔍</div>
+                        <div>
+                            <h2>Blockchain-Based Event Detection</h2>
+                            <p>Submit event text for ML/DL classification & blockchain anchoring</p>
+                        </div>
+                    </div>
+
+                    <!-- Display prediction results -->
+                    
+
+                    <form name="f1" method="post" action="/PredictAction" onsubmit="return validate(this);">
+                        <input type="hidden" name="csrfmiddlewaretoken" value="SjC5t6LZpbu4yV96Ej4pzYeOQnTFp2qvQix6I8mgIS9ZuFMtZr1WmJ5Yae4UziCv">
+                        <div class="form-group">
+                            <label class="form-label">Event / Tweet Text</label>
+                            <input type="text" name="t1" class="form-input" placeholder="Enter event text or tweet to analyze..." style="padding: 16px;">
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width: 100%;">
+                            🧠 Analyze & Anchor on Blockchain →
+                        </button>
+                    </form>
+
+                    <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border-subtle);">
+                        <p style="font-size: 12px; color: var(--text-muted); text-align: center; line-height: 1.8;">
+                            🧠 ML/DL Classification → 📊 Confidence Score → 🔒 SHA-256 Hash → 🛡 Trust Score → ⛓ Ethereum Anchor
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="app-footer">
+            Blockchain-Based Event Detection & Trust Verification
+        </footer>
+    </div>
+</body>
+</html>
