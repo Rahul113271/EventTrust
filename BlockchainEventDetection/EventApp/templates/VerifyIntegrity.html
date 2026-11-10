@@ -1,0 +1,1233 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Cryptographic Integrity Center & Blockchain Tamper Detection - EventTrust Platform">
+    <title>Cryptographic Integrity Center &bull; EventTrust</title>
+
+    <!-- Google Fonts: Inter & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Tactical Command Center CSS -->
+    <link rel="stylesheet" type="text/css" href="{% static 'officer_tactical.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'tactical_motion.css' %}">
+
+    <style>
+        /* Specific Component Enhancements for Verify Integrity Center */
+
+        .integrity-details-panel {
+            background-color: var(--eoc-bg-card);
+            border: 1px solid var(--eoc-border);
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 24px;
+        }
+
+        .details-grid {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .details-row {
+            display: grid;
+            grid-template-columns: 240px 1fr;
+            border-bottom: 1px solid var(--eoc-border-subtle);
+            padding: 14px 20px;
+            align-items: center;
+            font-size: 13px;
+        }
+
+        .details-row:last-child {
+            border-bottom: none;
+        }
+
+        .details-row:hover {
+            background-color: rgba(24, 38, 58, 0.35);
+        }
+
+        .details-label {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--eoc-text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .details-label svg {
+            width: 14px;
+            height: 14px;
+            color: var(--eoc-cyan);
+        }
+
+        .details-value {
+            color: var(--eoc-text-primary);
+            font-size: 13px;
+            line-height: 1.5;
+            word-break: break-word;
+        }
+
+        .details-value code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            background-color: #0A111E;
+            padding: 4px 8px;
+            border-radius: 4px;
+            border: 1px solid var(--eoc-border);
+            color: var(--eoc-cyan);
+            word-break: break-all;
+            display: inline-block;
+        }
+
+        /* Hash Comparison Panel */
+        .hash-comp-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            padding: 20px;
+        }
+
+        .hash-card {
+            background-color: var(--eoc-bg-sidebar);
+            border: 1px solid var(--eoc-border);
+            border-radius: 6px;
+            padding: 16px 18px;
+            position: relative;
+        }
+
+        .hash-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .hash-card-title {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            color: var(--eoc-text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .hash-code-block {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            background-color: #060B14;
+            border: 1px solid var(--eoc-border);
+            border-radius: 4px;
+            padding: 10px 12px;
+            color: var(--eoc-text-primary);
+            word-break: break-all;
+            line-height: 1.5;
+            margin-bottom: 10px;
+        }
+
+        .hash-code-block.match {
+            border-color: rgba(52, 211, 153, 0.4);
+            color: #6EE7B7;
+        }
+
+        .hash-code-block.mismatch {
+            border-color: rgba(248, 113, 113, 0.4);
+            color: #FCA5A5;
+        }
+
+        .hash-match-status {
+            margin: 0 20px 20px 20px;
+            padding: 14px 18px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .hash-match-status.verified {
+            background-color: var(--eoc-green-bg);
+            border: 1px solid var(--eoc-green);
+            color: var(--eoc-green);
+        }
+
+        .hash-match-status.tampered {
+            background-color: var(--eoc-red-bg);
+            border: 1px solid var(--eoc-red);
+            color: var(--eoc-red);
+        }
+
+        .hash-match-status.pending {
+            background-color: var(--eoc-amber-bg);
+            border: 1px solid var(--eoc-amber);
+            color: var(--eoc-amber);
+        }
+
+        /* Tamper Simulation Lab */
+        .tamper-lab-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .tamper-card {
+            background-color: var(--eoc-bg-sidebar);
+            border-radius: 8px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .tamper-card.tamper-action {
+            border: 1px solid rgba(248, 113, 113, 0.35);
+            background: linear-gradient(180deg, rgba(248, 113, 113, 0.04) 0%, rgba(13, 22, 37, 0.8) 100%);
+        }
+
+        .tamper-card.restore-action {
+            border: 1px solid rgba(52, 211, 153, 0.35);
+            background: linear-gradient(180deg, rgba(52, 211, 153, 0.04) 0%, rgba(13, 22, 37, 0.8) 100%);
+        }
+
+        .tamper-card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+
+        .tamper-card-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .tamper-card-icon.red {
+            background-color: var(--eoc-red-bg);
+            color: var(--eoc-red);
+            border: 1px solid rgba(248, 113, 113, 0.4);
+        }
+
+        .tamper-card-icon.green {
+            background-color: var(--eoc-green-bg);
+            color: var(--eoc-green);
+            border: 1px solid rgba(52, 211, 153, 0.4);
+        }
+
+        .tamper-card-title {
+            font-size: 13px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .tamper-card-title.red {
+            color: var(--eoc-red);
+        }
+
+        .tamper-card-title.green {
+            color: var(--eoc-green);
+        }
+
+        .tamper-card-desc {
+            font-size: 12px;
+            color: var(--eoc-text-secondary);
+            line-height: 1.5;
+            margin-bottom: 16px;
+        }
+
+        .btn-copy {
+            background: none;
+            border: 1px solid var(--eoc-border);
+            color: var(--eoc-cyan);
+            font-size: 10px;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .btn-copy:hover {
+            border-color: var(--eoc-cyan);
+            background-color: rgba(34, 211, 238, 0.1);
+        }
+
+        /* Quick Event Selector Bar */
+        .event-switcher-panel {
+            background-color: var(--eoc-bg-sidebar);
+            border: 1px solid var(--eoc-border);
+            border-radius: 8px;
+            padding: 12px 18px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 14px;
+        }
+
+        .event-switcher-form {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        @media (max-width: 980px) {
+            .details-row {
+                grid-template-columns: 1fr;
+                gap: 6px;
+            }
+
+            .hash-comp-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tamper-lab-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body class="eoc-body">
+
+    <div class="eoc-layout">
+        <!-- ===================================================================
+             1. FIXED LEFT SIDEBAR (Standard Officer Command Shell)
+             =================================================================== -->
+        <aside class="eoc-sidebar">
+            <div class="eoc-sidebar-header">
+                <div class="eoc-brand-logo">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <polygon
+                            points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2">
+                        </polygon>
+                    </svg>
+                </div>
+                <div class="eoc-brand-text">
+                    <div class="eoc-brand-name">
+                        EventTrust <span class="eoc-brand-badge">v2.5</span>
+                    </div>
+                    <div class="eoc-brand-sub">Emergency Ops Command</div>
+                </div>
+            </div>
+
+            <nav class="eoc-sidebar-nav">
+                <div class="eoc-nav-section-label">Operations</div>
+
+                <a href="/OfficerDashboard#overview-section" class="eoc-nav-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <rect x="3" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="14" width="7" height="7"></rect>
+                        <rect x="3" y="14" width="7" height="7"></rect>
+                    </svg>
+                    <span class="eoc-nav-text">Command Overview</span>
+                </a>
+
+                <a href="/OfficerDashboard#city-map-section" class="eoc-nav-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon>
+                        <line x1="8" y1="2" x2="8" y2="18"></line>
+                        <line x1="16" y1="6" x2="16" y2="22"></line>
+                    </svg>
+                    <span class="eoc-nav-text">Tactical City Map</span>
+                </a>
+
+                <a href="/OfficerDashboard#queue-section" class="eoc-nav-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <line x1="8" y1="6" x2="21" y2="6"></line>
+                        <line x1="8" y1="12" x2="21" y2="12"></line>
+                        <line x1="8" y1="18" x2="21" y2="18"></line>
+                        <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                        <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                        <line x1="3" y1="18" x2="3.01" y2="18"></line>
+                    </svg>
+                    <span class="eoc-nav-text">Incident Registry</span>
+                </a>
+
+                <a href="{% url 'VerifyIntegrity' %}" class="eoc-nav-item active">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                    </svg>
+                    <span class="eoc-nav-text">Integrity Verification</span>
+                </a>
+
+                <div class="eoc-nav-section-label">Intelligence</div>
+
+                <a href="{% url 'Graph' %}" class="eoc-nav-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <line x1="18" y1="20" x2="18" y2="10"></line>
+                        <line x1="12" y1="20" x2="12" y2="4"></line>
+                        <line x1="6" y1="20" x2="6" y2="14"></line>
+                    </svg>
+                    <span class="eoc-nav-text">Model Comparison &amp; Accuracy</span>
+                </a>
+
+                <a href="/OfficerDashboard#analytics-section" class="eoc-nav-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                    <span class="eoc-nav-text">Crisis Analytics</span>
+                </a>
+
+                <a href="{% url 'MapView' %}" class="eoc-nav-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
+                    </svg>
+                    <span class="eoc-nav-text">Full Geospatial Room</span>
+                </a>
+            </nav>
+
+            <!-- Sidebar Footer Profile -->
+            <div class="eoc-sidebar-footer">
+                <div class="eoc-profile-box">
+                    <div class="eoc-profile-avatar">
+                        {{ username|slice:":2"|upper|default:"OF" }}
+                    </div>
+                    <div class="eoc-profile-info">
+                        <div class="eoc-profile-name">{{ username|default:"officer_eoc" }}</div>
+                        <div class="eoc-profile-role">
+                            <span class="eoc-telemetry-dot"></span> {{ user_role|default:"Disaster Management Officer" }}
+                        </div>
+                    </div>
+                </div>
+                <a href="{% url 'Logout' %}" class="eoc-btn-logout">
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                    </svg>
+                    <span>Sign Out</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- ===================================================================
+             2. MAIN WORKSPACE CONTENT
+             =================================================================== -->
+        <main class="eoc-main">
+
+            <!-- TOP COMMAND BAR -->
+            <header class="eoc-topbar">
+                <div class="eoc-topbar-left">
+                    <div class="eoc-breadcrumb">
+                        <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                        </svg>
+                        Municipal Operations / Blockchain Auditing &amp; Tamper Detection
+                    </div>
+                    <h1 class="eoc-page-title">Cryptographic Integrity Center</h1>
+                </div>
+                <div class="eoc-topbar-right">
+                    {% if result.status == 'VERIFIED' %}
+                    <div class="eoc-threat-pill stable">
+                        <span class="eoc-pulse-dot"></span>
+                        <span>Ledger Integrity: Verified</span>
+                    </div>
+                    {% elif 'TAMPERED' in result.status %}
+                    <div class="eoc-threat-pill critical">
+                        <span class="eoc-pulse-dot"></span>
+                        <span>Integrity Alert: Tampered</span>
+                    </div>
+                    {% else %}
+                    <div class="eoc-threat-pill"
+                        style="background-color: var(--eoc-amber-bg); border: 1px solid var(--eoc-amber); color: var(--eoc-amber);">
+                        <span class="eoc-pulse-dot" style="background-color: var(--eoc-amber);"></span>
+                        <span>Audit State: Unverified</span>
+                    </div>
+                    {% endif %}
+                </div>
+            </header>
+
+            <!-- SYSTEM TELEMETRY STRIP -->
+            <div class="eoc-telemetry-strip">
+                <div class="eoc-telemetry-item">
+                    <span class="eoc-telemetry-dot"></span>
+                    <span>Blockchain: <strong>Truffle Devnet</strong></span>
+                    <code>Chain ID 5777</code>
+                </div>
+                <div class="eoc-telemetry-item">
+                    <span class="eoc-telemetry-dot blue"></span>
+                    <span>Contract: <code
+                            title="{{ contract_address }}">{{ contract_address|slice:":10" }}...{{ contract_address|slice:"-6:" }}</code></span>
+                </div>
+                <div class="eoc-telemetry-item">
+                    <span class="eoc-telemetry-dot purple"></span>
+                    <span>Auditing Engine: <strong>SHA-256 State Ledger</strong></span>
+                </div>
+                <div class="eoc-telemetry-item">
+                    <span class="eoc-telemetry-dot"></span>
+                    <span>Ledger State: <strong style="color: var(--eoc-green);">Synchronized</strong></span>
+                </div>
+                <div class="eoc-telemetry-item" style="margin-left: auto;">
+                    <span>Officer Session: <strong>{{ username|default:"officer_eoc" }}</strong></span>
+                </div>
+            </div>
+
+            <!-- QUICK EVENT SWITCHER & AUDIT BAR -->
+            <div class="event-switcher-panel">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="var(--eoc-cyan)"
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    <span
+                        style="font-size: 12px; font-weight: 700; color: var(--eoc-text-primary); text-transform: uppercase; letter-spacing: 0.5px;">Audit
+                        Target Event</span>
+                </div>
+
+                <form method="GET" action="{% url 'VerifyIntegrity' %}" class="event-switcher-form">
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <span style="font-size: 11px; color: var(--eoc-text-muted);">Quick Select:</span>
+                        <select class="eoc-select"
+                            onchange="if(this.value) window.location.href='{% url 'VerifyIntegrity' %}?event_id=' + this.value;">
+                            <option value="">-- Choose Recent Incident --</option>
+                            {% for ev in recent_events %}
+                            <option value="{{ ev.id }}" {% if ev.id == target_display_id %}selected{% endif %}>
+                                #{{ ev.id }} - {{ ev.tweet|slice:":45" }}...
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <input type="number" name="event_id" value="{{ target_display_id|default:'' }}"
+                            class="eoc-search-input" placeholder="Enter Event ID..."
+                            style="width: 140px; font-family: 'JetBrains Mono', monospace;" required>
+                        <button type="submit" class="eoc-btn-audit">
+                            Inspect On-Chain
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- ===================================================================
+                 SECTION E: NOTIFICATION / ACTION BANNERS
+                 =================================================================== -->
+            {% if demo_status == 'tampered' %}
+            <div
+                style="display: flex; align-items: center; gap: 12px; width: 100%; padding: 14px 18px; margin-bottom: 20px; border-radius: 6px; font-size: 13px; font-weight: 600; background-color: var(--eoc-red-bg); border: 1px solid var(--eoc-red); color: var(--eoc-red); box-sizing: border-box;">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+                <div>
+                    <strong>DEMO TAMPERING EXECUTED for Event #{{ target_display_id }}:</strong>
+                    Blockchain cryptographic proof hash was modified to <code>0xdeadbeef...</code> via
+                    <code>simulateEventTampering()</code>.
+                    The cryptographic integrity gate failed, forfeiting the Trust Score to <strong>0 / 100</strong>.
+                </div>
+            </div>
+            {% elif demo_status == 'restored' %}
+            <div
+                style="display: flex; align-items: center; gap: 12px; width: 100%; padding: 14px 18px; margin-bottom: 20px; border-radius: 6px; font-size: 13px; font-weight: 600; background-color: var(--eoc-green-bg); border: 1px solid var(--eoc-green); color: var(--eoc-green); box-sizing: border-box;">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+                <div>
+                    <strong>DEMO RESTORATION SUCCESSFUL for Event #{{ target_display_id }}:</strong>
+                    The authentic SHA-256 hash and trust score were restored to the Ethereum blockchain via
+                    <code>restoreEvent()</code>.
+                    Data integrity is <strong>VERIFIED</strong> and Trust Score is restored!
+                </div>
+            </div>
+            {% elif demo_status == 'no_backup' %}
+            <div
+                style="display: flex; align-items: center; gap: 12px; width: 100%; padding: 14px 18px; margin-bottom: 20px; border-radius: 6px; font-size: 13px; font-weight: 600; background-color: var(--eoc-amber-bg); border: 1px solid var(--eoc-amber); color: var(--eoc-amber); box-sizing: border-box;">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+                <div>
+                    <strong>NO DEMO BACKUP FOUND:</strong> No prior pre-tamper event backup is currently stored for
+                    Event #{{ target_display_id }}.
+                </div>
+            </div>
+            {% elif demo_status == 'error' %}
+            <div
+                style="display: flex; align-items: center; gap: 12px; width: 100%; padding: 14px 18px; margin-bottom: 20px; border-radius: 6px; font-size: 13px; font-weight: 600; background-color: var(--eoc-red-bg); border: 1px solid var(--eoc-red); color: var(--eoc-red); box-sizing: border-box;">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;">
+                    <polygon
+                        points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2">
+                    </polygon>
+                </svg>
+                <div>
+                    <strong>DEMO ACTION ERROR:</strong> Could not communicate with the smart contract at
+                    http://127.0.0.1:9545. Ensure Truffle Develop blockchain node is active.
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- ===================================================================
+                 SECTION A: VERIFICATION OVERVIEW KPI CARDS (4 Cards in One Row)
+                 =================================================================== -->
+            <div class="eoc-kpi-row">
+                <div class="eoc-kpi-card cyan eoc-tilt-card">
+                    <div class="eoc-kpi-header">
+                        <span class="eoc-kpi-label">Selected Event ID</span>
+                        <svg class="eoc-kpi-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <rect x="3" y="3" width="7" height="7"></rect>
+                            <rect x="14" y="3" width="7" height="7"></rect>
+                            <rect x="14" y="14" width="7" height="7"></rect>
+                            <rect x="3" y="14" width="7" height="7"></rect>
+                        </svg>
+                    </div>
+                    <div class="eoc-kpi-value">#{{ target_display_id|default:"N/A" }}</div>
+                    <div class="eoc-kpi-sub">Target Incident Record</div>
+                </div>
+
+                <div
+                    class="eoc-kpi-card {% if result.status == 'VERIFIED' %}green verified{% elif 'TAMPERED' in result.status %}red disaster{% else %}amber{% endif %} eoc-tilt-card">
+                    <div class="eoc-kpi-header">
+                        <span class="eoc-kpi-label">Blockchain Verification</span>
+                        <svg class="eoc-kpi-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                        </svg>
+                    </div>
+                    <div class="eoc-kpi-value" style="font-size: 22px;">{{ status_text }}</div>
+                    <div class="eoc-kpi-sub">SHA-256 On-Chain Proof</div>
+                </div>
+
+                <div
+                    class="eoc-kpi-card {% if trust_score >= 70 %}green verified{% elif trust_score >= 40 %}amber{% else %}red disaster{% endif %} eoc-tilt-card">
+                    <div class="eoc-kpi-header">
+                        <span class="eoc-kpi-label">Trust Score</span>
+                        <svg class="eoc-kpi-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <polygon
+                                points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2">
+                            </polygon>
+                        </svg>
+                    </div>
+                    <div class="eoc-kpi-value"><span class="eoc-counter" data-counter-target="{{ trust_score }}">{{ trust_score }}</span> / 100</div>
+                    <div class="eoc-kpi-sub">
+                        {% if result.status == 'VERIFIED' %}
+                        Integrity Verified &bull; Score Active
+                        {% else %}
+                        Score Forfeited to 0 (Hard-Gate)
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="eoc-kpi-card {% if result.exists %}green verified{% else %}amber{% endif %} eoc-tilt-card">
+                    <div class="eoc-kpi-header">
+                        <span class="eoc-kpi-label">Ledger Integrity</span>
+                        <svg class="eoc-kpi-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 14 14"></polyline>
+                        </svg>
+                    </div>
+                    <div class="eoc-kpi-value" style="font-size: 20px;">
+                        {% if result.exists %}COMMITTED{% else %}UNANCHORED{% endif %}
+                    </div>
+                    <div class="eoc-kpi-sub">Smart Contract State Proof</div>
+                </div>
+            </div>
+
+            <!-- ===================================================================
+                 SECTION B: EVENT INTEGRITY DETAILS (Structured 2-Column Info Panel)
+                 =================================================================== -->
+            <section class="integrity-details-panel">
+                <div class="eoc-panel-header">
+                    <div>
+                        <div class="eoc-panel-title">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                            </svg>
+                            <span>BLOCKCHAIN EVENT TRUST VERIFICATION</span>
+                        </div>
+                        <div style="font-size: 11px; color: var(--eoc-text-secondary); margin-top: 3px;">
+                            Cryptographic verification comparing local database records with Ethereum smart contract
+                            state
+                        </div>
+                    </div>
+                    {% if result.status == 'VERIFIED' %}
+                    <span class="eoc-badge-blockchain verified">VERIFIED ON-CHAIN</span>
+                    {% elif 'TAMPERED' in result.status %}
+                    <span class="eoc-badge-blockchain tampered">TAMPERED STATE</span>
+                    {% else %}
+                    <span class="eoc-badge-blockchain pending">UNANCHORED RECORD</span>
+                    {% endif %}
+                </div>
+
+                <div class="details-grid">
+                    <!-- Event ID -->
+                    <div class="details-row">
+                        <div class="details-label">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="3" width="7" height="7"></rect>
+                                <rect x="14" y="3" width="7" height="7"></rect>
+                            </svg>
+                            Event ID
+                        </div>
+                        <div class="details-value">
+                            <span
+                                style="font-family: 'JetBrains Mono', monospace; font-weight: 800; color: var(--eoc-cyan); font-size: 15px;">#{{ target_display_id|default:"N/A" }}</span>
+                            <span style="font-size: 11px; color: var(--eoc-text-muted); margin-left: 8px;">(Ethereum
+                                Registry &amp; Supabase Database)</span>
+                        </div>
+                    </div>
+
+                    <!-- Data Integrity -->
+                    <div class="details-row">
+                        <div class="details-label">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                            </svg>
+                            Data Integrity
+                        </div>
+                        <div class="details-value">
+                            {% if result.status == 'VERIFIED' %}
+                            <span class="eoc-badge-class normal" style="font-size: 12px; padding: 4px 10px;">
+                                <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor"
+                                    stroke-width="2"
+                                    style="display: inline-block; vertical-align: middle; margin-right: 4px;">
+                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                </svg>
+                                VERIFIED
+                            </span>
+                            {% elif 'TAMPERED' in result.status %}
+                            <span class="eoc-badge-class disaster" style="font-size: 12px; padding: 4px 10px;">
+                                <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor"
+                                    stroke-width="2"
+                                    style="display: inline-block; vertical-align: middle; margin-right: 4px;">
+                                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                                </svg>
+                                TAMPERED / UNVERIFIED
+                            </span>
+                            {% else %}
+                            <span class="eoc-badge-class warning" style="font-size: 12px; padding: 4px 10px;">
+                                <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor"
+                                    stroke-width="2"
+                                    style="display: inline-block; vertical-align: middle; margin-right: 4px;">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                                </svg>
+                                NOT ANCHORED / UNVERIFIED
+                            </span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Trust Score -->
+                    <div class="details-row">
+                        <div class="details-label">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon
+                                    points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2">
+                                </polygon>
+                            </svg>
+                            Trust Score
+                        </div>
+                        <div class="details-value">
+                            <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
+                                <span
+                                    style="font-size: 16px; font-weight: 800; font-family: 'JetBrains Mono', monospace; color: {% if trust_score >= 70 %}var(--eoc-green){% elif trust_score >= 40 %}var(--eoc-amber){% else %}var(--eoc-red){% endif %};">
+                                    {{ trust_score }} / 100
+                                </span>
+                                <div class="eoc-score-bar-bg" style="width: 120px; height: 6px;">
+                                    <div class="eoc-score-bar-fill"
+                                        style="width: {{ trust_score }}%; background-color: {% if trust_score >= 70 %}var(--eoc-green){% elif trust_score >= 40 %}var(--eoc-amber){% else %}var(--eoc-red){% endif %};">
+                                    </div>
+                                </div>
+                                <span style="font-size: 11px; color: var(--eoc-text-muted);">
+                                    {% if result.status == 'VERIFIED' %}
+                                    (Integrity: 50 | DL Confidence: 40 max | Event Context: 10 max)
+                                    {% elif result.status == 'NOT ANCHORED / UNVERIFIED' %}
+                                    <span style="color: var(--eoc-red); font-weight: 700;">(Score forfeited: Event is
+                                        not anchored on Ethereum)</span>
+                                    {% else %}
+                                    <span style="color: var(--eoc-red); font-weight: 700;">(Score forfeited:
+                                        Cryptographic mismatch detected)</span>
+                                    {% endif %}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Classification -->
+                    <div class="details-row">
+                        <div class="details-label">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                            </svg>
+                            Classification
+                        </div>
+                        <div class="details-value">
+                            {% if 'disaster' in result.latest_class|lower %}
+                            <span class="eoc-badge-class disaster">{{ result.latest_class }}</span>
+                            {% else %}
+                            <span class="eoc-badge-class normal">{{ result.latest_class }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Confidence -->
+                    <div class="details-row">
+                        <div class="details-label">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polyline points="12 6 12 12 14 14"></polyline>
+                            </svg>
+                            DL Model Confidence
+                        </div>
+                        <div class="details-value">
+                            <span
+                                style="font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--eoc-cyan);">{{ confidence_display }}</span>
+                        </div>
+                    </div>
+
+                    <!-- Latest Stored Post -->
+                    <div class="details-row">
+                        <div class="details-label">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                            </svg>
+                            Latest Stored Post
+                        </div>
+                        <div class="details-value">
+                            {% if result.latest_tweet %}
+                            <div style="color: var(--eoc-text-primary); font-size: 13px; margin-bottom: 4px;">
+                                "{{ result.latest_tweet }}"
+                            </div>
+                            <div style="font-size: 11px; color: var(--eoc-text-muted);">
+                                Filed by: <strong style="color: var(--eoc-cyan);">{{ result.latest_user }}</strong>
+                                &bull; Recorded: <span style="font-family: 'JetBrains Mono', monospace;">{{ result.latest_date }}</span>
+                            </div>
+                            {% elif result.post_data %}
+                            <div style="color: var(--eoc-red); font-size: 13px; font-weight: 700;">
+                                [ALTERED RECORD]: <code>{{ result.post_data }}</code>
+                            </div>
+                            {% else %}
+                            <span style="color: var(--eoc-text-muted);">No post observation record available.</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Verification Message -->
+                    <div class="details-row">
+                        <div class="details-label">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="16" x2="12" y2="12"></line>
+                                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                            </svg>
+                            Verification Message
+                        </div>
+                        <div class="details-value" style="color: var(--eoc-text-secondary); line-height: 1.5;">
+                            {{ result.message }}
+                        </div>
+                    </div>
+
+                    <!-- Multi-Witness Consensus -->
+                    {% if consensus_info.has_consensus %}
+                    <div class="details-row">
+                        <div class="details-label">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polyline points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polyline>
+                            </svg>
+                            Multi-Witness Consensus
+                        </div>
+                        <div class="details-value">
+                            <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+                                <span class="eoc-badge-blockchain {{ consensus_info.status_class }}">{{ consensus_info.status_str }}</span>
+                                <span style="font-size: 12px;">Confirmations: <strong
+                                        style="color: var(--eoc-green);">+{{ consensus_info.confirmations }}</strong></span>
+                                <span style="font-size: 12px;">Disputes: <strong style="color: var(--eoc-red);">-{{ consensus_info.disputes }}</strong></span>
+                            </div>
+                            <div style="margin-top: 10px; display: flex; gap: 8px;">
+                                <a href="/CastWitnessVote?event_id={{ target_display_id }}&vote=confirm"
+                                    class="eoc-btn-action"
+                                    style="color: var(--eoc-green); border-color: rgba(52, 211, 153, 0.4);">
+                                    <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <polyline points="20 6 9 17 4 12"></polyline>
+                                    </svg>
+                                    Cast Witness Confirmation (+2)
+                                </a>
+                                <a href="/CastWitnessVote?event_id={{ target_display_id }}&vote=dispute"
+                                    class="eoc-btn-action dispatch">
+                                    <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                                    </svg>
+                                    Dispute Authenticity (-15)
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </section>
+
+            <!-- ===================================================================
+                 3D INTERACTIVE BLOCKCHAIN VERIFICATION LATTICE (Three.js)
+                 =================================================================== -->
+            <section class="eoc-lab-panel" style="margin-bottom: 24px; background: rgba(13, 22, 37, 0.7); border: 1px solid var(--eoc-border); border-top: 2px solid {% if result.status == 'VERIFIED' %}#34D399{% elif 'TAMPERED' in result.status %}#F87171{% else %}#FBBF24{% endif %}; border-radius: 8px; overflow: hidden;">
+                <div class="eoc-panel-header">
+                    <div>
+                        <div class="eoc-panel-title">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                                <polyline points="2 17 12 22 22 17"></polyline>
+                                <polyline points="2 12 12 17 22 12"></polyline>
+                            </svg>
+                            <span>3D CRYPTOGRAPHIC LEDGER STATE LATTICE</span>
+                        </div>
+                        <div style="font-size: 11px; color: var(--eoc-text-secondary); margin-top: 2px;">
+                            Real-time WebGL spatial inspection of Ethereum Block Nodes &bull; Active Target Block: <strong>#{{ target_display_id|default:"N/A" }}</strong>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span class="eoc-badge-blockchain {% if result.status == 'VERIFIED' %}verified{% elif 'TAMPERED' in result.status %}tampered{% else %}pending{% endif %}">
+                            {% if result.status == 'VERIFIED' %}
+                                LEDGER INTEGRITY CONFIRMED
+                            {% elif 'TAMPERED' in result.status %}
+                                CRYPTOGRAPHIC FRACTURE DETECTED
+                            {% else %}
+                                UNANCHORED STATE
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+
+                <div id="blockchain-verify-canvas" style="width: 100%; height: 260px; position: relative; background: radial-gradient(circle at center, #0F1C2E 0%, #080E19 80%);">
+                    <div style="position: absolute; top: 12px; left: 16px; z-index: 10; font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--eoc-cyan);">
+                        &bull; ETHEREUM DEVNET CHAIN 5777 &bull; ACTIVE REPUTATION LEDGER
+                    </div>
+                    <div style="position: absolute; bottom: 12px; right: 16px; z-index: 10; font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--eoc-text-muted);">
+                        INTERACTIVE ORBIT: DRAG TO ROTATE &bull; REAL-TIME STATE
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===================================================================
+                 SECTION C: CRYPTOGRAPHIC HASH COMPARISON MATRIX
+                 =================================================================== -->
+            <section class="eoc-panel"
+                style="background-color: var(--eoc-bg-card); border: 1px solid var(--eoc-border); border-radius: 8px; margin-bottom: 24px; overflow: hidden;">
+                <div class="eoc-panel-header">
+                    <div>
+                        <div class="eoc-panel-title">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                            </svg>
+                            <span>CRYPTOGRAPHIC HASH COMPARISON MATRIX</span>
+                        </div>
+                        <div style="font-size: 11px; color: var(--eoc-text-secondary); margin-top: 3px;">
+                            Bit-for-bit mathematical comparison between off-chain database record and immutable on-chain
+                            state
+                        </div>
+                    </div>
+                </div>
+
+                <div class="hash-comp-grid">
+                    <!-- DATABASE LOCAL HASH -->
+                    <div class="hash-card eoc-tilt-card">
+                        <div class="hash-card-header">
+                            <span class="hash-card-title">
+                                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="var(--eoc-cyan)"
+                                    stroke-width="2">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                </svg>
+                                Database Hash (Off-Chain Computed)
+                            </span>
+                            <button type="button" class="btn-copy"
+                                onclick="copyToClipboard('{{ result.local_hash }}', this)">
+                                Copy Hash
+                            </button>
+                        </div>
+                        <div class="hash-code-block hash-scan-container {% if result.status == 'VERIFIED' %}match verified{% elif 'TAMPERED' in result.status %}mismatch tampered{% endif %}"
+                            id="localHashCode">
+                            {{ result.local_hash }}
+                        </div>
+                        <div style="font-size: 11px; color: var(--eoc-text-muted);">
+                            SHA-256 hash computed over canonical payload format: <code>user$tweet$date$class\n</code>
+                        </div>
+                    </div>
+
+                    <!-- ETHEREUM ON-CHAIN HASH -->
+                    <div class="hash-card eoc-tilt-card">
+                        <div class="hash-card-header">
+                            <span class="hash-card-title">
+                                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="var(--eoc-green)"
+                                    stroke-width="2">
+                                    <polygon
+                                        points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2">
+                                    </polygon>
+                                </svg>
+                                Ethereum On-Chain Hash (dataHash)
+                            </span>
+                            <button type="button" class="btn-copy"
+                                onclick="copyToClipboard('{{ result.blockchain_hash }}', this)">
+                                Copy Hash
+                            </button>
+                        </div>
+                        <div class="hash-code-block hash-scan-container {% if result.status == 'VERIFIED' %}match verified{% elif 'TAMPERED' in result.status %}mismatch tampered{% endif %}"
+                            id="blockchainHashCode">
+                            {{ result.blockchain_hash }}
+                        </div>
+                        <div style="font-size: 11px; color: var(--eoc-text-muted);">
+                            Retrieved from smart contract state via <code>getEvent(event_id)</code> &bull; Network:
+                            Truffle Devnet (5777)
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Match Status Indicator -->
+                {% if result.status == 'VERIFIED' %}
+                <div class="hash-match-status verified">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"
+                        style="flex-shrink: 0;">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    <div>
+                        <strong>100% CRYPTOGRAPHIC EQUIVALENCE CONFIRMED:</strong>
+                        Off-chain computed hash matches the Ethereum on-chain immutable proof string exactly.
+                    </div>
+                </div>
+                {% elif 'TAMPERED' in result.status %}
+                <div class="hash-match-status tampered">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"
+                        style="flex-shrink: 0;">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                    <div>
+                        <strong>CRYPTOGRAPHIC DIVERGENCE DETECTED:</strong>
+                        Database SHA-256 hash does not match the Ethereum on-chain state hash. Potential unauthorized
+                        mutation detected!
+                    </div>
+                </div>
+                {% else %}
+                <div class="hash-match-status pending">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"
+                        style="flex-shrink: 0;">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                    <div>
+                        <strong>UNANCHORED / ZERO ON-CHAIN STATE:</strong>
+                        Event #{{ target_display_id }} has no active dataHash recorded in the Ethereum contract mapping.
+                    </div>
+                </div>
+                {% endif %}
+            </section>
+
+            <!-- ===================================================================
+                 SECTION D: EVENT-SPECIFIC TAMPER SIMULATION LAB
+                 =================================================================== -->
+            <section class="eoc-lab-panel"
+                style="background-color: var(--eoc-bg-card); border: 1px solid var(--eoc-border); border-radius: 8px; margin-bottom: 24px; overflow: hidden;">
+                <div class="eoc-panel-header">
+                    <div>
+                        <div class="eoc-panel-title">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="18" y1="20" x2="18" y2="10"></line>
+                                <line x1="12" y1="20" x2="12" y2="4"></line>
+                                <line x1="6" y1="20" x2="6" y2="14"></line>
+                            </svg>
+                            <span>EVENT-SPECIFIC TAMPER SIMULATION LAB</span>
+                        </div>
+                        <div style="font-size: 11px; color: var(--eoc-text-secondary); margin-top: 3px;">
+                            Demonstrate blockchain-based detection of unauthorized incident record modifications without
+                            modifying contract code
+                        </div>
+                    </div>
+                    <span class="eoc-badge-blockchain pending">SECURITY DEMO TESTBED</span>
+                </div>
+
+                <div class="tamper-lab-grid">
+                    <!-- LEFT CARD: SIMULATE BLOCKCHAIN TAMPERING -->
+                    <div class="tamper-card tamper-action">
+                        <div>
+                            <div class="tamper-card-header">
+                                <div class="tamper-card-icon red">
+                                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <polygon
+                                            points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2">
+                                        </polygon>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="tamper-card-title red">Simulate Blockchain Tampering</div>
+                                    <div
+                                        style="font-size: 10px; color: var(--eoc-text-muted); font-family: 'JetBrains Mono', monospace;">
+                                        Target Event ID: #{{ target_display_id }}</div>
+                                </div>
+                            </div>
+                            <div class="tamper-card-desc">
+                                Invokes <code>simulateEventTampering()</code> on Ethereum to overwrite the on-chain
+                                proof hash with corrupted bytes (<code>0xdeadbeef...</code>). This causes the
+                                cryptographic integrity gate to immediately fail, dropping the Trust Score to <strong>0
+                                    / 100</strong>.
+                            </div>
+                        </div>
+
+                        <form method="POST" action="{% url 'SimulateTamper' %}"
+                            onsubmit="return confirmTampering('{{ target_display_id }}')">
+                            {% csrf_token %}
+                            {% if target_display_id %}
+                            <input type="hidden" name="event_id" value="{{ target_display_id }}">
+                            {% endif %}
+                            <button type="submit" class="eoc-btn-sim tamper"
+                                style="width: 100%; justify-content: center; padding: 12px; font-size: 12px; cursor: pointer;">
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <polygon
+                                        points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2">
+                                    </polygon>
+                                </svg>
+                                <span>Simulate Blockchain Tampering</span>
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- RIGHT CARD: RESTORE AUTHENTIC EVENT -->
+                    <div class="tamper-card restore-action">
+                        <div>
+                            <div class="tamper-card-header">
+                                <div class="tamper-card-icon green">
+                                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="tamper-card-title green">Restore Authentic Event</div>
+                                    <div
+                                        style="font-size: 10px; color: var(--eoc-text-muted); font-family: 'JetBrains Mono', monospace;">
+                                        Target Event ID: #{{ target_display_id }}</div>
+                                </div>
+                            </div>
+                            <div class="tamper-card-desc">
+                                Restores the original SHA-256 hash and legitimate trust score on the Ethereum blockchain
+                                via <code>restoreEvent()</code>. Data integrity will immediately return to
+                                <strong>VERIFIED</strong> with full score rehabilitation.
+                            </div>
+                        </div>
+
+                        <form method="POST" action="{% url 'RestoreEvent' %}">
+                            {% csrf_token %}
+                            {% if target_display_id %}
+                            <input type="hidden" name="event_id" value="{{ target_display_id }}">
+                            {% endif %}
+                            <button type="submit" class="eoc-btn-sim restore"
+                                style="width: 100%; justify-content: center; padding: 12px; font-size: 12px; cursor: pointer;">
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                                </svg>
+                                <span>Restore Authentic Event State</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- ===================================================================
+         SCRIPTING ENGINE & INTERACTION LOGIC
+         =================================================================== -->
+    <script>
+        function copyToClipboard(text, btn) {
+            if (!text || text.trim() === '') return;
+            navigator.clipboard.writeText(text).then(() => {
+                const orig = btn.innerText;
+                btn.innerText = "Copied!";
+                btn.style.color = "var(--eoc-green)";
+                btn.style.borderColor = "var(--eoc-green)";
+                setTimeout(() => {
+                    btn.innerText = orig;
+                    btn.style.color = "var(--eoc-cyan)";
+                    btn.style.borderColor = "var(--eoc-border)";
+                }, 2000);
+            }).catch(err => {
+                console.error("Copy failed:", err);
+            });
+        }
+
+        function confirmTampering(eventId) {
+            return confirm(
+                "SECURITY DEMONSTRATION WARNING:\n\n" +
+                "This action will alter the on-chain SHA-256 cryptographic proof hash on Ethereum for Event #" + eventId + " to an artificial corrupted hash (0xdeadbeef...).\n\n" +
+                "The cryptographic integrity gate will fail and the on-chain Trust Score will be reset to 0/100.\n\n" +
+                "Proceed with demonstration?"
+            );
+        }
+    </script>
+
+    <!-- 3D Scripts & Verification Visualizer -->
+    <script src="{% static 'three.min.js' %}"></script>
+    <script src="{% static 'tactical_motion.js' %}"></script>
+    <script src="{% static 'blockchain_verify3d.js' %}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (window.initBlockchainVerify3D) {
+                initBlockchainVerify3D('blockchain-verify-canvas', '{{ result.status }}', '{{ target_display_id }}');
+            }
+        });
+    </script>
+</body>
+
+</html>

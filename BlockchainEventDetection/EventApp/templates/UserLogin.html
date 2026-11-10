@@ -4,130 +4,291 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="User Login for Blockchain-Based Event Detection System">
-    <meta name="keywords" content="login, blockchain, event detection, trust verification">
-    <title>Login — TrustChain</title>
-    <link rel="stylesheet" type="text/css" href="{% static 'app.css' %}">
+    <meta name="description" content="Operator Authentication &bull; EventTrust Emergency Platform">
+    <title>Sign In &bull; EventTrust Operations</title>
 
-    <!-- Preserved Form Validation Script -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{% static 'tactical_foundation.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'tactical_motion.css' %}">
+
+    <style>
+        .auth-container {
+            min-height: calc(100vh - 64px - 60px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 24px;
+        }
+
+        .auth-split-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            max-width: 920px;
+            width: 100%;
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
+        }
+
+        .auth-brand-pane {
+            background-color: var(--bg-secondary);
+            border-right: 1px solid var(--border-color);
+            padding: 44px 36px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .auth-form-pane {
+            padding: 44px 36px;
+        }
+
+        .auth-form-title {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--text-primary);
+            letter-spacing: -0.3px;
+            margin-bottom: 6px;
+        }
+
+        .auth-form-subtitle {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+        }
+
+        .alert-error {
+            background-color: var(--color-disaster-dim);
+            border: 1px solid rgba(248, 113, 113, 0.35);
+            color: var(--color-disaster);
+            padding: 10px 14px;
+            border-radius: 6px;
+            font-size: 12px;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .demo-roles-box {
+            margin-top: 24px;
+            padding-top: 18px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .demo-roles-label {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .demo-btn-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .demo-role-btn {
+            background-color: var(--bg-elevated);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            font-size: 11px;
+            font-weight: 600;
+            padding: 8px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.15s ease;
+        }
+
+        .demo-role-btn:hover {
+            border-color: var(--accent-cyan);
+            color: var(--text-primary);
+        }
+
+        @media (max-width: 768px) {
+            .auth-split-wrapper { grid-template-columns: 1fr; }
+            .auth-brand-pane { display: none; }
+        }
+    </style>
+
     <script language="javascript">
     function validate(formObj) {
-        if(formObj.t1.value.length==0) {
-            alert("Please Enter User ID");
+        if(formObj.t1.value.length == 0) {
+            alert("Please enter Operator ID");
             formObj.t1.focus();
             return false;
         }
-        if(formObj.t2.value.length==0) {
-            alert("Please Enter Password");
+        if(formObj.t2.value.length == 0) {
+            alert("Please enter Password");
             formObj.t2.focus();
             return false;
         }
         return true;
     }
 
-    function togglePasswordVisibility() {
-        var pwd = document.getElementById("loginPassword");
-        var icon = document.getElementById("pwdToggleIcon");
-        if (pwd.type === "password") {
-            pwd.type = "text";
-            icon.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line>';
-        } else {
-            pwd.type = "password";
-            icon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>';
-        }
+    function quickFill(user, pass) {
+        document.getElementsByName('t1')[0].value = user;
+        document.getElementsByName('t2')[0].value = pass;
     }
     </script>
-
-    <!-- Three.js 3D WebGL Engine -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="{% static 'blockchain3d.js' %}"></script>
 </head>
 <body>
-    <!-- Fullscreen 3D Blockchain Ledger Mesh Background -->
-    <div id="blockchain-bg-canvas"></div>
-
-    <div class="app-shell">
-        <!-- Top Navigation Bar -->
-        <nav class="topbar">
-            <a href="{% url 'index' %}" class="topbar-brand">
-                <div class="topbar-logo-crest">
-                    <svg class="svg-icon-lg" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+    <div class="app-container">
+        <!-- Top Nav -->
+        <header class="global-nav">
+            <a href="{% url 'index' %}" class="brand-link">
+                <div class="brand-badge-icon">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                    </svg>
                 </div>
                 <div>
-                    <div class="topbar-title">TrustChain <span class="version-badge">v2.4</span></div>
-                    <div class="topbar-subtitle">Blockchain Event Intelligence</div>
+                    <div class="brand-title">EventTrust <span class="brand-version">v2.5</span></div>
+                    <div class="brand-sub">Crisis Intelligence &amp; Verification</div>
                 </div>
             </a>
-            <div class="topbar-nav">
-                <a href="{% url 'index' %}">
-                    <svg class="svg-icon" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-                    Home
-                </a>
-                <a href="{% url 'UserLogin' %}" class="active">
-                    <svg class="svg-icon" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                    Login
-                </a>
-                <a href="{% url 'Register' %}">
-                    <svg class="svg-icon" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><line x1="20" y1="8" x2="20" y2="14"></line><line x1="23" y1="11" x2="17" y2="11"></line></svg>
-                    Sign Up
-                </a>
-            </div>
-        </nav>
 
-        <!-- Login Form Wrapper -->
-        <div class="auth-wrapper">
-            <div class="auth-card animate-in">
-                <div style="text-align:center; margin-bottom: 22px;">
-                    <div class="feature-icon-box cyan" style="margin: 0 auto; width: 56px; height: 56px;">
-                        <svg class="svg-icon-xl" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            <nav class="nav-links">
+                <a href="{% url 'index' %}" class="nav-link-btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                    </svg>
+                    <span>Overview</span>
+                </a>
+                <a href="{% url 'UserLogin' %}" class="nav-link-btn active">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                    <span>Operator Sign In</span>
+                </a>
+                <a href="{% url 'Register' %}" class="nav-link-btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="8.5" cy="7" r="4"></circle>
+                        <line x1="20" y1="8" x2="20" y2="14"></line>
+                        <line x1="23" y1="11" x2="17" y2="11"></line>
+                    </svg>
+                    <span>Register Handle</span>
+                </a>
+            </nav>
+        </header>
+
+        <!-- Auth Body -->
+        <main class="auth-container eoc-page-enter">
+            <div class="auth-split-wrapper eoc-tilt-card">
+                <!-- Left Pane: Branding & 3D Earth Globe -->
+                <div class="auth-brand-pane">
+                    <div>
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                            <div class="tactical-beacon">
+                                <div class="tactical-beacon-dot"></div>
+                                <div class="tactical-beacon-ring"></div>
+                            </div>
+                            <span style="font-size: 11px; font-weight: 700; color: var(--accent-cyan); text-transform: uppercase; letter-spacing: 0.6px;">
+                                Global Disaster Monitoring Grid
+                            </span>
+                        </div>
+                        <h2 style="font-size: 21px; font-weight: 900; color: var(--text-primary); margin-bottom: 8px; line-height: 1.25;">
+                            Disaster Response Mission Control
+                        </h2>
+                        <p style="font-size: 12px; color: var(--text-secondary); line-height: 1.5;">
+                            Multi-source crisis telemetry, multimodal AI inspection &amp; zero-trust Ethereum anchoring.
+                        </p>
+                    </div>
+
+                    <!-- 3D Global Disaster Sphere Canvas -->
+                    <div id="earth-3d-canvas" style="width: 100%; height: 210px; margin: 12px 0; border-radius: 8px; overflow: hidden; background: radial-gradient(circle at center, #0B192C 0%, #080E19 85%); border: 1px solid rgba(34,211,238,0.25); position: relative;">
+                        <div style="position: absolute; top: 8px; left: 10px; z-index: 10; font-size: 9px; font-family: 'JetBrains Mono', monospace; color: var(--accent-cyan); letter-spacing: 0.8px;">
+                            &bull; 3D GLOBAL ORBITAL SURVEILLANCE
+                        </div>
+                        <div style="position: absolute; bottom: 8px; right: 10px; z-index: 10; font-size: 9px; font-family: 'JetBrains Mono', monospace; color: #64748B;">
+                            8 NODES SYNCED
+                        </div>
+                    </div>
+
+                    <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 6px; padding: 12px; display: flex; align-items: center; justify-content: space-between;">
+                        <div>
+                            <div style="font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Cryptographic Ledger</div>
+                            <div style="font-size: 11px; color: var(--accent-cyan); font-family: 'JetBrains Mono', monospace;">Truffle Devnet &bull; Chain 5777</div>
+                        </div>
+                        <span class="eoc-badge-blockchain verified" style="font-size: 10px; padding: 2px 8px;">ACTIVE</span>
                     </div>
                 </div>
-                <h2>Operator Authentication</h2>
-                <p class="auth-sub">Sign in to access AI event detection and Ethereum registry</p>
 
-                <!-- Error Messages -->
-                {% if data %}
-                <div class="alert alert-error">
-                    <svg class="svg-icon" viewBox="0 0 24 24" style="color: #f87171;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-                    <div>{{ data|safe }}</div>
-                </div>
-                {% endif %}
+                <!-- Right Pane: Form -->
+                <div class="auth-form-pane">
+                    <h2 class="auth-form-title">Operator Authentication</h2>
+                    <p class="auth-form-subtitle">Enter your credentials to launch operational dashboard</p>
 
-                <form name="f1" method="post" action="{% url 'UserLoginAction' %}" onsubmit="return validate(this);">
-                    {% csrf_token %}
-                    <div class="form-group">
-                        <label class="form-label">Username / Operator Handle</label>
-                        <input type="text" name="t1" class="form-input" placeholder="Enter username" autocomplete="username">
+                    {% if data %}
+                    <div class="alert-error">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                        <span>{{ data|safe }}</span>
                     </div>
-                    <div class="form-group">
-                        <label class="form-label">Password</label>
-                        <div style="position: relative; display: flex; align-items: center;">
-                            <input type="password" id="loginPassword" name="t2" class="form-input" placeholder="Enter password" autocomplete="current-password" style="padding-right: 42px;">
-                            <button type="button" onclick="togglePasswordVisibility()" style="position: absolute; right: 12px; background: none; border: none; cursor: pointer; color: var(--text-muted); padding: 4px; display: flex; align-items: center;" title="Toggle visibility">
-                                <svg id="pwdToggleIcon" class="svg-icon" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                    {% endif %}
+
+                    <form name="f1" method="post" action="{% url 'UserLoginAction' %}" onsubmit="return validate(this);">
+                        {% csrf_token %}
+
+                        <div class="form-field-group">
+                            <label class="form-field-label">Operator Handle / Username</label>
+                            <input type="text" name="t1" class="form-control-input" placeholder="Enter username" autocomplete="username" required>
+                        </div>
+
+                        <div class="form-field-group">
+                            <label class="form-field-label">Access Password</label>
+                            <input type="password" name="t2" class="form-control-input" placeholder="Enter password" autocomplete="current-password" required>
+                        </div>
+
+                        <button type="submit" class="btn-tactical primary" style="width: 100%; padding: 12px; margin-top: 6px;">
+                            Authenticate &amp; Launch Terminal
+                        </button>
+                    </form>
+
+                    <!-- Evaluator Quick Fill -->
+                    <div class="demo-roles-box">
+                        <div class="demo-roles-label">Evaluator Demo Accounts</div>
+                        <div class="demo-btn-group">
+                            <button type="button" class="demo-role-btn" onclick="quickFill('volunteer1', 'pass123')">
+                                <span style="color: var(--color-verified);">&bull;</span> Volunteer (Field)
+                            </button>
+                            <button type="button" class="demo-role-btn" onclick="quickFill('officer_eoc', 'pass123')">
+                                <span style="color: var(--accent-cyan);">&bull;</span> Officer (Command)
                             </button>
                         </div>
                     </div>
-                    <button type="submit" class="btn btn-primary" style="width:100%; margin-top: 10px; padding: 14px;">
-                        Authenticate &amp; Launch Dashboard
-                    </button>
-                </form>
 
-                <div class="auth-footer">
-                    New operator? <a href="{% url 'Register' %}">Register on Blockchain</a>
+                    <div style="font-size: 11px; color: var(--text-muted); text-align: center; margin-top: 20px;">
+                        Need to register? <a href="{% url 'Register' %}" style="color: var(--accent-cyan); font-weight: 600; text-decoration: none;">Create Operator Handle</a>
+                    </div>
                 </div>
             </div>
-        </div>
+        </main>
 
         <!-- Footer -->
-        <footer class="app-footer">
-            <div class="app-footer-left">
-                <span>TrustChain &bull; Final Year Project</span>
-            </div>
-            <div>
-                Blockchain Event Detection &amp; Trust Verification System
-            </div>
+        <footer class="tactical-footer">
+            <div><strong>EventTrust</strong> &bull; Mohan Babu University &bull; Academic Project</div>
+            <div>Decentralized Cryptographic Disaster Management</div>
         </footer>
     </div>
+
+    <!-- 3D Scripts & Motion Engine -->
+    <script src="{% static 'three.min.js' %}"></script>
+    <script src="{% static 'tactical_motion.js' %}"></script>
+    <script src="{% static 'earth3d.js' %}"></script>
+    <script src="{% static 'tactical_ambient3d.js' %}"></script>
 </body>
 </html>

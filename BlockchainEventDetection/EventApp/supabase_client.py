@@ -33,9 +33,22 @@ SUPABASE_KEY = _ENV.get('SUPABASE_KEY', '')
 SUPABASE_SERVICE_ROLE_KEY = _ENV.get('SUPABASE_SERVICE_ROLE_KEY', '')
 TIMEOUT_SECONDS = 5
 
+def _ensure_config():
+    """Ensure SUPABASE_URL, SUPABASE_KEY, and SUPABASE_SERVICE_ROLE_KEY are loaded from .env."""
+    global SUPABASE_URL, SUPABASE_KEY, SUPABASE_SERVICE_ROLE_KEY
+    if not SUPABASE_URL or not SUPABASE_KEY:
+        cfg = _load_env_config()
+        if cfg.get('SUPABASE_URL'):
+            SUPABASE_URL = cfg['SUPABASE_URL'].rstrip('/')
+        if cfg.get('SUPABASE_KEY'):
+            SUPABASE_KEY = cfg['SUPABASE_KEY']
+        if cfg.get('SUPABASE_SERVICE_ROLE_KEY'):
+            SUPABASE_SERVICE_ROLE_KEY = cfg['SUPABASE_SERVICE_ROLE_KEY']
+
 def _get_storage_key():
     """Return service_role key if available for backend uploads, otherwise publishable key."""
     global SUPABASE_SERVICE_ROLE_KEY
+    _ensure_config()
     if not SUPABASE_SERVICE_ROLE_KEY:
         cfg = _load_env_config()
         if cfg.get('SUPABASE_SERVICE_ROLE_KEY'):
@@ -44,6 +57,7 @@ def _get_storage_key():
 
 def _get_headers():
     """Generate headers required for Supabase PostgREST REST API."""
+    _ensure_config()
     return {
         "apikey": SUPABASE_KEY,
         "Authorization": "Bearer {}".format(SUPABASE_KEY),
@@ -57,6 +71,7 @@ def test_connection():
     Tests GET access to public.users and public.events endpoints.
     Does not insert, update, or delete any records.
     """
+    _ensure_config()
     if not SUPABASE_URL or not SUPABASE_KEY:
         return {
             'success': False,
@@ -108,6 +123,7 @@ def insert_user(username, email=None, contact=None, address=None):
     Insert a user profile into public.users.
     Plaintext passwords are NOT accepted or stored.
     """
+    _ensure_config()
     if not SUPABASE_URL or not SUPABASE_KEY:
         return {'success': False, 'error': 'Missing Supabase credentials.'}
     
@@ -143,6 +159,7 @@ def upload_event_image(file_data, filename, content_type='image/jpeg', bucket_na
     Returns:
       dict with {'success': True, 'image_url': '...', 'image_path': '...'} or {'success': False, 'error': '...'}
     """
+    _ensure_config()
     if not SUPABASE_URL:
         return {'success': False, 'error': 'Missing SUPABASE_URL configuration.'}
 
@@ -195,6 +212,7 @@ def insert_event(username, tweet, classification, confidence, event_date, sha256
     and optional image_url in Supabase Storage.
     Existing calls without image_url continue working seamlessly.
     """
+    _ensure_config()
     if not SUPABASE_URL or not SUPABASE_KEY:
         return {'success': False, 'error': 'Missing Supabase credentials.'}
         
@@ -235,6 +253,7 @@ def insert_event(username, tweet, classification, confidence, event_date, sha256
 
 def get_latest_event():
     """Fetch the latest event record ordered by created_at descending."""
+    _ensure_config()
     if not SUPABASE_URL or not SUPABASE_KEY:
         return None
         
@@ -254,6 +273,7 @@ def get_latest_event():
 
 def get_event(event_id):
     """Fetch a specific event record by ID."""
+    _ensure_config()
     if not SUPABASE_URL or not SUPABASE_KEY:
         return None
         
@@ -273,6 +293,7 @@ def get_event(event_id):
 
 def get_all_events():
     """Fetch all events ordered by created_at descending."""
+    _ensure_config()
     if not SUPABASE_URL or not SUPABASE_KEY:
         return []
     url = "{}/rest/v1/events?order=created_at.desc".format(SUPABASE_URL)
@@ -290,6 +311,7 @@ def get_all_events():
 
 def update_event_tx_hash(event_id, blockchain_tx_hash):
     """Update an existing event record with its Ethereum transaction hash."""
+    _ensure_config()
     if not SUPABASE_URL or not SUPABASE_KEY:
         return {'success': False, 'error': 'Missing Supabase credentials.'}
     url = "{}/rest/v1/events?id=eq.{}".format(SUPABASE_URL, event_id)

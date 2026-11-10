@@ -4,157 +4,391 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="User Registration for Blockchain-Based Event Detection and Trust Verification">
-    <meta name="keywords" content="registration, signup, blockchain, event detection, smart contract">
-    <title>Sign Up — TrustChain</title>
-    <link rel="stylesheet" type="text/css" href="{% static 'app.css' %}">
+    <meta name="description" content="Cryptographic Identity Provisioning & Role Registration - EventTrust">
+    <title>Operator Enrollment &bull; EventTrust</title>
 
-    <!-- Preserved Form Validation Script -->
-    <script language="javascript">
+    <!-- Google Fonts: Inter & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <!-- Global Tactical Foundation -->
+    <link rel="stylesheet" type="text/css" href="{% static 'tactical_foundation.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'tactical_motion.css' %}">
+
+    <style>
+        .register-container {
+            min-height: calc(100vh - 120px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 32px 20px;
+        }
+
+        .register-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            max-width: 980px;
+            width: 100%;
+            background: #121C2E;
+            border: 1px solid #26364C;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.5);
+        }
+
+        @media (max-width: 860px) {
+            .register-grid {
+                grid-template-columns: 1fr;
+            }
+            .register-info-panel {
+                display: none;
+            }
+        }
+
+        .register-info-panel {
+            background: #0D1625;
+            padding: 40px 32px;
+            border-right: 1px solid #26364C;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .register-form-panel {
+            padding: 40px 36px;
+            background: #121C2E;
+        }
+
+        .jurisdiction-box {
+            background: #18263A;
+            border: 1px solid #26364C;
+            border-left: 3px solid #22D3EE;
+            border-radius: 6px;
+            padding: 14px 16px;
+            margin-bottom: 16px;
+        }
+    </style>
+
+    <!-- Preserved Form Validation Script & Dynamic Jurisdiction Dispatch -->
+    <script>
     function validate(formObj) {
-        if(formObj.t1.value.length==0) {
-            alert("Please Enter User ID");
+        if(formObj.t1.value.length == 0) {
+            alert("Please enter Operator ID / Username");
             formObj.t1.focus();
             return false;
         }
-        if(formObj.t2.value.length==0) {
-            alert("Please Enter Password");
+        if(formObj.t2.value.length == 0) {
+            alert("Please enter Password");
             formObj.t2.focus();
             return false;
         }
-        if(formObj.t3.value.length==0) {
-            alert("Please Enter Contact No");
+        if(formObj.t3.value.length == 0) {
+            alert("Please enter Contact Number");
             formObj.t3.focus();
             return false;
         }
         if(isNaN(formObj.t3.value)) {
-            window.alert("Please enter valid mobile no");
+            alert("Please enter a valid numeric mobile number");
             formObj.t3.focus();
             return false;
         }
-        if(formObj.t4.value.length==0) {
-            alert("Please Enter Email ID");
+        if(formObj.t4.value.length == 0) {
+            alert("Please enter Email Address");
             formObj.t4.focus();
             return false;
         }
         var filter = /^([a-zA-Z0-9_\.\-])+\@(gmail+\.)+(com)+$/;
         if (!filter.test(formObj.t4.value)) {
-            window.alert('enter a valid email address');
+            alert("Please enter a valid Gmail address (@gmail.com)");
             formObj.t4.focus();
             return false;
         }
-        if(formObj.t5.value.length==0) {
-            alert("Please Enter Address");
+        if(formObj.t5.value.length == 0) {
+            alert("Please enter Physical Base / Sector Address");
             formObj.t5.focus();
             return false;
         }
         return true;
     }
-    </script>
 
-    <!-- Three.js 3D WebGL Engine -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="{% static 'blockchain3d.js' %}"></script>
+    const WARD_OPTIONS = {
+        "Zone 1 - Central Commercial": [
+            "Ward 01 - City Center", "Ward 02 - Market Square", "Ward 03 - Railway Hub", "Ward 04 - Bus Terminal", "Ward 05 - Financial District"
+        ],
+        "Zone 2 - North Industrial": [
+            "Ward 06 - Logistics Park", "Ward 07 - Tech Valley", "Ward 08 - Heavy Industry", "Ward 09 - Substation North", "Ward 10 - North Ring Road"
+        ],
+        "Zone 3 - South Education & Tech (MBU)": [
+            "Ward 11 - University South", "Ward 12 - Nagapatla Village", "Ward 13 - Innovation Campus", "Ward 14 - Sree Sainath Nagar", "Ward 15 - Hillview Enclave"
+        ],
+        "Zone 4 - East Residential": [
+            "Ward 16 - Green Meadows", "Ward 17 - East Lakefront", "Ward 18 - Sunrise Colony", "Ward 19 - Civic Gardens", "Ward 20 - Community Heights"
+        ],
+        "Zone 5 - West Riverfront": [
+            "Ward 21 - Riverview", "Ward 22 - West Bypass", "Ward 23 - Heritage Quarters", "Ward 24 - Botanical Sector", "Ward 25 - Valley Gate"
+        ]
+    };
+
+    function updateWardOptions() {
+        const zoneSelect = document.getElementById("zoneSelect");
+        const wardSelect = document.getElementById("wardSelect");
+        if (!zoneSelect || !wardSelect) return;
+        const selectedZone = zoneSelect.value;
+        const wards = WARD_OPTIONS[selectedZone] || [];
+        wardSelect.innerHTML = "";
+        wards.forEach(w => {
+            const opt = document.createElement("option");
+            opt.value = w;
+            opt.textContent = w;
+            wardSelect.appendChild(opt);
+        });
+    }
+
+    function toggleRoleJurisdiction() {
+        const role = document.getElementById("roleSelect").value;
+        const jurBox = document.getElementById("jurisdictionFields");
+        if (role === "Volunteer") {
+            jurBox.style.display = "block";
+        } else {
+            jurBox.style.display = "none";
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        updateWardOptions();
+    });
+    </script>
 </head>
 <body>
-    <!-- Fullscreen 3D Blockchain Ledger Mesh Background -->
-    <div id="blockchain-bg-canvas"></div>
 
-    <div class="app-shell">
-        <!-- Top Navigation Bar -->
-        <nav class="topbar">
-            <a href="{% url 'index' %}" class="topbar-brand">
-                <div class="topbar-logo-crest">
-                    <svg class="svg-icon-lg" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+    <!-- Unified Tactical Topbar -->
+    <header class="tactical-topbar">
+        <div class="topbar-left">
+            <a href="{% url 'index' %}" class="tactical-brand">
+                <div class="brand-crest">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                    </svg>
                 </div>
                 <div>
-                    <div class="topbar-title">TrustChain <span class="version-badge">v2.4</span></div>
-                    <div class="topbar-subtitle">Blockchain Event Intelligence</div>
+                    <div class="brand-title">EventTrust <span class="brand-version">v2.5</span></div>
+                    <div class="brand-subtitle">Decentralized Disaster Intelligence</div>
                 </div>
             </a>
-            <div class="topbar-nav">
-                <a href="{% url 'index' %}">
-                    <svg class="svg-icon" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-                    Home
-                </a>
-                <a href="{% url 'UserLogin' %}">
-                    <svg class="svg-icon" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                    Login
-                </a>
-                <a href="{% url 'Register' %}" class="active">
-                    <svg class="svg-icon" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><line x1="20" y1="8" x2="20" y2="14"></line><line x1="23" y1="11" x2="17" y2="11"></line></svg>
-                    Sign Up
-                </a>
-            </div>
-        </nav>
+        </div>
 
-        <!-- Registration Form Wrapper -->
-        <div class="auth-wrapper">
-            <div class="auth-card animate-in" style="max-width: 520px;">
-                <div style="text-align:center; margin-bottom: 22px;">
-                    <div class="feature-icon-box blue" style="margin: 0 auto; width: 56px; height: 56px;">
-                        <svg class="svg-icon-xl" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><line x1="20" y1="8" x2="20" y2="14"></line><line x1="23" y1="11" x2="17" y2="11"></line></svg>
+        <nav class="tactical-nav">
+            <a href="{% url 'index' %}" class="nav-item">
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                    <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                </svg>
+                <span>Platform Overview</span>
+            </a>
+            <a href="{% url 'UserLogin' %}" class="nav-item">
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+                <span>Officer &bull; Volunteer Login</span>
+            </a>
+            <a href="{% url 'Register' %}" class="nav-item active">
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="8.5" cy="7" r="4"></circle>
+                    <line x1="20" y1="8" x2="20" y2="14"></line>
+                    <line x1="23" y1="11" x2="17" y2="11"></line>
+                </svg>
+                <span>Enroll Profile</span>
+            </a>
+        </nav>
+    </header>
+
+    <!-- Main Registration Shell -->
+    <div class="register-container eoc-page-enter">
+        <div class="register-grid eoc-tilt-card">
+            <!-- Left Info Panel -->
+            <div class="register-info-panel">
+                <div>
+                    <div style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; background: rgba(34, 211, 238, 0.1); border: 1px solid rgba(34, 211, 238, 0.25); border-radius: 4px; font-size: 11px; font-weight: 700; color: #22D3EE; text-transform: uppercase; margin-bottom: 14px;">
+                        <span class="status-indicator online"></span>
+                        <span>Role Provisioning</span>
+                    </div>
+
+                    <h2 style="font-size: 21px; font-weight: 800; color: #F1F5F9; line-height: 1.3; margin-bottom: 8px;">
+                        Enroll Municipal Operator
+                    </h2>
+
+                    <!-- 3D Global Disaster Sphere Canvas -->
+                    <div id="earth-3d-canvas" style="width: 100%; height: 180px; margin: 10px 0 16px 0; border-radius: 8px; overflow: hidden; background: radial-gradient(circle at center, #0B192C 0%, #080E19 85%); border: 1px solid rgba(34,211,238,0.25); position: relative;">
+                        <div style="position: absolute; top: 8px; left: 10px; z-index: 10; font-size: 9px; font-family: 'JetBrains Mono', monospace; color: #22D3EE; letter-spacing: 0.8px;">
+                            &bull; 3D GLOBAL SURVEILLANCE
+                        </div>
+                    </div>
+
+                    <p style="font-size: 13px; color: #94A3B8; line-height: 1.6; margin-bottom: 24px;">
+                        EventTrust uses role-based access control combined with cryptographic Ethereum smart contract anchoring to ensure non-repudiation across disaster reporting and emergency dispatch.
+                    </p>
+
+                    <div style="display: flex; flex-direction: column; gap: 14px;">
+                        <div style="display: flex; gap: 12px; align-items: flex-start;">
+                            <div style="width: 28px; height: 28px; border-radius: 6px; background: rgba(52, 211, 153, 0.15); border: 1px solid rgba(52, 211, 153, 0.3); display: flex; align-items: center; justify-content: center; color: #34D399; flex-shrink: 0;">
+                                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="7" r="4"></circle>
+                                    <path d="M5.5 21a6.5 6.5 0 0 1 13 0"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <div style="font-size: 12px; font-weight: 700; color: #F1F5F9;">Field Operations Volunteer</div>
+                                <div style="font-size: 11px; color: #94A3B8; line-height: 1.4; margin-top: 2px;">
+                                    Authorized to submit geolocated photo feeds in assigned municipal zones and wards.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; gap: 12px; align-items: flex-start;">
+                            <div style="width: 28px; height: 28px; border-radius: 6px; background: rgba(34, 211, 238, 0.15); border: 1px solid rgba(34, 211, 238, 0.3); display: flex; align-items: center; justify-content: center; color: #22D3EE; flex-shrink: 0;">
+                                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                                </svg>
+                            </div>
+                            <div>
+                                <div style="font-size: 12px; font-weight: 700; color: #F1F5F9;">Disaster Management Officer</div>
+                                <div style="font-size: 11px; color: #94A3B8; line-height: 1.4; margin-top: 2px;">
+                                    Full EOC command authorization: live city telemetry, unit dispatch, cryptographic auditing.
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <h2>Register Operator Profile</h2>
-                <p class="auth-sub">Identity record anchored on Ethereum smart contract</p>
 
-                <!-- Feedback Messages -->
+                <div style="border-top: 1px solid #26364C; padding-top: 20px; font-size: 11px; color: #94A3B8; display: flex; justify-content: space-between;">
+                    <span>Truffle Devnet 5777</span>
+                    <span>SHA-256 Anchored</span>
+                </div>
+            </div>
+
+            <!-- Right Registration Form Panel -->
+            <div class="register-form-panel">
+                <div style="margin-bottom: 20px;">
+                    <h3 style="font-size: 18px; font-weight: 800; color: #F1F5F9; margin-bottom: 4px;">Operator Credential Setup</h3>
+                    <div style="font-size: 12px; color: #94A3B8;">Fill in required field details to provision your platform credentials.</div>
+                </div>
+
+                <!-- Django Feedback Alert -->
                 {% if data %}
-                <div class="alert {% if 'completd' in data or 'saved' in data %}alert-success{% else %}alert-error{% endif %}">
-                    {% if 'completd' in data or 'saved' in data %}
-                    <svg class="svg-icon" viewBox="0 0 24 24" style="color: #34d399;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-                    {% else %}
-                    <svg class="svg-icon" viewBox="0 0 24 24" style="color: #f87171;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-                    {% endif %}
-                    <div>{{ data|safe }}</div>
+                <div class="status-pill {% if 'completd' in data or 'saved' in data %}success{% else %}danger{% endif %}" style="display: flex; align-items: center; gap: 8px; width: 100%; padding: 10px 14px; margin-bottom: 18px; border-radius: 6px; font-size: 12px;">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        {% if 'completd' in data or 'saved' in data %}
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                        {% else %}
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        {% endif %}
+                    </svg>
+                    <span>{{ data|safe }}</span>
                 </div>
                 {% endif %}
 
                 <form name="f1" method="post" action="{% url 'RegisterAction' %}" onsubmit="return validate(this);">
                     {% csrf_token %}
-                    <div class="form-group">
-                        <label class="form-label">Username / Operator Handle</label>
-                        <input type="text" name="t1" class="form-input" placeholder="Choose username">
+
+                    <div class="form-group" style="margin-bottom: 14px;">
+                        <label class="form-label" style="display: flex; justify-content: space-between;">
+                            <span>Platform Role Authorization</span>
+                            <span style="font-size: 10px; color: #22D3EE; font-weight: 600;">EOC &bull; Field</span>
+                        </label>
+                        <select name="role" id="roleSelect" class="form-select" onchange="toggleRoleJurisdiction();">
+                            <option value="Volunteer" selected>Field Operations Volunteer (Zone &amp; Ward Reporting)</option>
+                            <option value="Disaster Management Officer">Disaster Management Officer (City EOC Command Center)</option>
+                        </select>
                     </div>
-                    <div class="form-group">
-                        <label class="form-label">Password</label>
-                        <input type="password" name="t2" class="form-input" placeholder="Create password">
-                    </div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
-                        <div class="form-group">
-                            <label class="form-label">Contact Number</label>
-                            <input type="text" name="t3" class="form-input" placeholder="10-digit number">
+
+                    <!-- Municipal Jurisdiction (for volunteers) -->
+                    <div id="jurisdictionFields" class="jurisdiction-box">
+                        <div style="font-size: 11px; font-weight: 700; color: #22D3EE; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">
+                            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon>
+                            </svg>
+                            <span>Assigned Municipal Jurisdiction</span>
                         </div>
-                        <div class="form-group">
-                            <label class="form-label">Email Address (Gmail)</label>
-                            <input type="text" name="t4" class="form-input" placeholder="user@gmail.com">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                            <div>
+                                <label class="form-label" style="font-size: 10px;">City Zone</label>
+                                <select name="zone" id="zoneSelect" class="form-select" onchange="updateWardOptions();" style="font-size: 12px; padding: 6px 10px;">
+                                    <option value="Zone 3 - South Education & Tech (MBU)" selected>Zone 3 - South Education &amp; Tech (MBU)</option>
+                                    <option value="Zone 1 - Central Commercial">Zone 1 - Central Commercial</option>
+                                    <option value="Zone 2 - North Industrial">Zone 2 - North Industrial</option>
+                                    <option value="Zone 4 - East Residential">Zone 4 - East Residential</option>
+                                    <option value="Zone 5 - West Riverfront">Zone 5 - West Riverfront</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="form-label" style="font-size: 10px;">Assigned Ward</label>
+                                <select name="ward" id="wardSelect" class="form-select" style="font-size: 12px; padding: 6px 10px;">
+                                    <!-- Dynamically populated by JS -->
+                                </select>
+                            </div>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label class="form-label">Physical Location / Address</label>
-                        <input type="text" name="t5" class="form-input" placeholder="City / Base station">
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;">
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label class="form-label">Operator Handle / ID</label>
+                            <input type="text" name="t1" class="form-input" placeholder="e.g. volunteer_02" required>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label class="form-label">Access Password</label>
+                            <input type="password" name="t2" class="form-input" placeholder="Create password" required>
+                        </div>
                     </div>
-                    <button type="submit" class="btn btn-primary" style="width:100%; margin-top: 10px; padding: 14px;">
-                        Register &amp; Anchor on Blockchain
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;">
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label class="form-label">Contact Phone</label>
+                            <input type="text" name="t3" class="form-input" placeholder="10-digit number" required>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label class="form-label">Gmail Address</label>
+                            <input type="text" name="t4" class="form-input" placeholder="user@gmail.com" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 20px;">
+                        <label class="form-label">Sector Base / Address</label>
+                        <input type="text" name="t5" class="form-input" placeholder="Mohan Babu University / Tirupati Metro" value="Nagapatla, Tirupati Metro" required>
+                    </div>
+
+                    <button type="submit" class="btn-tactical primary" style="width: 100%; padding: 12px; justify-content: center; font-size: 13px;">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="8.5" cy="7" r="4"></circle>
+                            <polyline points="17 11 19 13 23 9"></polyline>
+                        </svg>
+                        <span>Enroll Operator Profile &bull; Anchor Identity</span>
                     </button>
                 </form>
 
-                <div class="auth-footer">
-                    Already registered? <a href="{% url 'UserLogin' %}">Sign in to Dashboard</a>
+                <div style="margin-top: 18px; text-align: center; font-size: 12px; color: #94A3B8;">
+                    Already enrolled? <a href="{% url 'UserLogin' %}" style="color: #22D3EE; text-decoration: none; font-weight: 600;">Sign in here</a>
                 </div>
             </div>
         </div>
-
-        <!-- Footer -->
-        <footer class="app-footer">
-            <div class="app-footer-left">
-                <span>TrustChain &bull; Final Year Project</span>
-            </div>
-            <div>
-                Blockchain Event Detection &amp; Trust Verification System
-            </div>
-        </footer>
     </div>
+
+    <!-- Unified Tactical Footer -->
+    <footer class="tactical-footer">
+        <div>EventTrust &bull; Municipal Disaster Intelligence &amp; Trust Architecture</div>
+        <div>Ethereum Smart Contract Anchored &bull; Inter &amp; JetBrains Mono Typography</div>
+    </footer>
+
+    <!-- 3D Scripts & Motion Engine -->
+    <script src="{% static 'three.min.js' %}"></script>
+    <script src="{% static 'tactical_motion.js' %}"></script>
+    <script src="{% static 'earth3d.js' %}"></script>
+    <script src="{% static 'tactical_ambient3d.js' %}"></script>
 </body>
 </html>

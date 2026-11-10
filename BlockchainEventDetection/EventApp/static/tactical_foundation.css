@@ -1,0 +1,469 @@
+/* ==========================================================================
+   EVENTTRUST (TRUSTCHAIN v2.5) UNIFIED DESIGN SYSTEM
+   Theme: Advanced Tactical Disaster Management Platform
+   Design Tokens:
+     Primary Background: #080E19
+     Secondary Background: #0D1625
+     Card Background: #121C2E
+     Elevated Surfaces: #18263A
+     Border: #26364C
+     Primary Accent (Cyan): #22D3EE
+     Disaster Red: #F87171
+     Verified Green: #34D399
+     Warning Amber: #FBBF24
+     Primary Text: #F1F5F9
+     Secondary Text: #94A3B8
+     Muted Text: #64748B
+   Typography: Inter, JetBrains Mono (Codes/Digests)
+   Icons: SVG only, Zero Emojis
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+:root {
+  --bg-primary: #080E19;
+  --bg-secondary: #0D1625;
+  --bg-card: #121C2E;
+  --bg-elevated: #18263A;
+  --border-color: #26364C;
+  --border-subtle: rgba(38, 54, 76, 0.6);
+  --accent-cyan: #22D3EE;
+  --accent-cyan-dim: rgba(34, 211, 238, 0.12);
+  --color-disaster: #F87171;
+  --color-disaster-dim: rgba(248, 113, 113, 0.12);
+  --color-verified: #34D399;
+  --color-verified-dim: rgba(52, 211, 153, 0.12);
+  --color-warning: #FBBF24;
+  --color-warning-dim: rgba(251, 191, 36, 0.12);
+  --text-primary: #F1F5F9;
+  --text-secondary: #94A3B8;
+  --text-muted: #64748B;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  line-height: 1.5;
+}
+
+/* Common App Shell */
+.app-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Global Top Navigation Bar */
+.global-nav {
+  height: 64px;
+  background-color: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 28px;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.brand-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+}
+
+.brand-badge-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 6px;
+  background: var(--accent-cyan-dim);
+  border: 1px solid var(--accent-cyan);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent-cyan);
+}
+
+.brand-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: 0.4px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.brand-version {
+  font-size: 9px;
+  font-weight: 700;
+  padding: 2px 5px;
+  background: var(--accent-cyan-dim);
+  color: var(--accent-cyan);
+  border: 1px solid rgba(34, 211, 238, 0.3);
+  border-radius: 4px;
+  font-family: var(--font-mono);
+}
+
+.brand-sub {
+  font-size: 10px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nav-link-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 13px;
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  transition: all 0.15s ease;
+}
+
+.nav-link-btn svg {
+  width: 15px;
+  height: 15px;
+  stroke-width: 2;
+}
+
+.nav-link-btn:hover {
+  background-color: var(--bg-elevated);
+  color: var(--text-primary);
+  border-color: var(--border-color);
+}
+
+.nav-link-btn.active {
+  background-color: var(--accent-cyan-dim);
+  border-color: rgba(34, 211, 238, 0.35);
+  color: var(--accent-cyan);
+}
+
+.nav-link-btn.logout {
+  color: var(--color-disaster);
+  border-color: rgba(248, 113, 113, 0.25);
+  background-color: var(--color-disaster-dim);
+}
+
+.nav-link-btn.logout:hover {
+  background-color: rgba(248, 113, 113, 0.2);
+  border-color: var(--color-disaster);
+}
+
+/* Telemetry Strip */
+.telemetry-strip {
+  display: flex;
+  align-items: center;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 10px 18px;
+  gap: 22px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.telemetry-node {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.telemetry-node strong {
+  color: var(--text-primary);
+}
+
+.telemetry-node code {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  background-color: var(--bg-elevated);
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid var(--border-color);
+  color: var(--accent-cyan);
+}
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: var(--color-verified);
+}
+
+.status-dot.cyan { background-color: var(--accent-cyan); }
+.status-dot.purple { background-color: #A855F7; }
+.status-dot.red { background-color: var(--color-disaster); }
+
+/* Global Card Component */
+.tactical-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 22px 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+.tactical-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 14px;
+  margin-bottom: 18px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.tactical-card-title {
+  font-size: 14px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tactical-card-title svg {
+  width: 17px;
+  height: 17px;
+  color: var(--accent-cyan);
+}
+
+/* Global Buttons */
+.btn-tactical {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 9px 18px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  border-radius: 6px;
+  text-decoration: none;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-tactical.primary {
+  background-color: var(--accent-cyan);
+  color: #080E19;
+  border-color: var(--accent-cyan);
+}
+
+.btn-tactical.primary:hover {
+  background-color: #67E8F9;
+  border-color: #67E8F9;
+}
+
+.btn-tactical.secondary {
+  background-color: var(--bg-elevated);
+  color: var(--text-primary);
+  border-color: var(--border-color);
+}
+
+.btn-tactical.secondary:hover {
+  border-color: var(--accent-cyan);
+  color: var(--accent-cyan);
+}
+
+.btn-tactical.danger {
+  background-color: var(--color-disaster-dim);
+  color: var(--color-disaster);
+  border-color: rgba(248, 113, 113, 0.35);
+}
+
+.btn-tactical.danger:hover {
+  background-color: rgba(248, 113, 113, 0.22);
+  border-color: var(--color-disaster);
+}
+
+.btn-tactical.success {
+  background-color: var(--color-verified-dim);
+  color: var(--color-verified);
+  border-color: rgba(52, 211, 153, 0.35);
+}
+
+.btn-tactical.success:hover {
+  background-color: rgba(52, 211, 153, 0.22);
+  border-color: var(--color-verified);
+}
+
+/* Global Form Elements */
+.form-field-group {
+  margin-bottom: 18px;
+}
+
+.form-field-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
+.form-control-input {
+  width: 100%;
+  background-color: var(--bg-elevated);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  font-size: 13px;
+  padding: 10px 14px;
+  border-radius: 6px;
+  outline: none;
+  font-family: var(--font-sans);
+  transition: border-color 0.15s ease;
+}
+
+.form-control-input:focus {
+  border-color: var(--accent-cyan);
+}
+
+/* Badges */
+.status-pill {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.status-pill.disaster {
+  background-color: var(--color-disaster-dim);
+  color: var(--color-disaster);
+  border: 1px solid rgba(248, 113, 113, 0.35);
+}
+
+.status-pill.verified {
+  background-color: var(--color-verified-dim);
+  color: var(--color-verified);
+  border: 1px solid rgba(52, 211, 153, 0.35);
+}
+
+.status-pill.warning {
+  background-color: var(--color-warning-dim);
+  color: var(--color-warning);
+  border: 1px solid rgba(251, 191, 36, 0.35);
+}
+
+.status-pill.neutral {
+  background-color: rgba(148, 163, 184, 0.1);
+  color: var(--text-secondary);
+  border: 1px solid rgba(148, 163, 184, 0.25);
+}
+
+/* Universal Table Styling */
+.table-viewport-container {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background-color: var(--bg-card);
+}
+
+.tactical-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  text-align: left;
+}
+
+.tactical-table th {
+  background-color: #0A111E;
+  color: var(--text-muted);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border-color);
+  white-space: nowrap;
+}
+
+.tactical-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  vertical-align: middle;
+}
+
+.tactical-table tr:hover td {
+  background-color: rgba(24, 38, 58, 0.45);
+}
+
+/* Footer */
+.tactical-footer {
+  padding: 24px 28px;
+  border-top: 1px solid var(--border-color);
+  background-color: var(--bg-secondary);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: auto;
+}
+
+.tactical-footer strong {
+  color: var(--text-secondary);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .global-nav {
+    padding: 0 16px;
+    flex-direction: column;
+    height: auto;
+    padding-bottom: 12px;
+    gap: 12px;
+  }
+  .nav-links {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .telemetry-strip {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .tactical-footer {
+    flex-direction: column;
+    gap: 8px;
+    text-align: center;
+  }
+}
+

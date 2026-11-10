@@ -1,0 +1,1244 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Municipal Volunteer Field Operations & Tactical Reporting Terminal - EventTrust Platform">
+    <title>Volunteer Operations Terminal &bull; EventTrust</title>
+
+    <!-- Google Fonts: Inter & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Leaflet.js Mapping Infrastructure -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+    <!-- Tactical Command Center Shared CSS -->
+    <link rel="stylesheet" type="text/css" href="{% static 'officer_tactical.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'tactical_motion.css' %}">
+
+    <style>
+        /* Specific Component Enhancements for Volunteer Operations Terminal */
+        
+        /* Category Selector Grid */
+        .category-select-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin-bottom: 18px;
+        }
+
+        .category-card {
+            background-color: var(--eoc-bg-sidebar);
+            border: 1px solid var(--eoc-border);
+            border-radius: 6px;
+            padding: 12px 10px;
+            cursor: pointer;
+            transition: all 0.18s ease;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .category-card:hover {
+            border-color: var(--eoc-cyan);
+            background-color: var(--eoc-bg-elevated);
+            transform: translateY(-1px);
+        }
+
+        .category-card.active {
+            border-color: var(--eoc-cyan);
+            background-color: rgba(34, 211, 238, 0.08);
+            box-shadow: 0 0 12px rgba(34, 211, 238, 0.15);
+        }
+
+        .category-card.active::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background-color: var(--eoc-cyan);
+        }
+
+        .category-icon {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--eoc-text-secondary);
+            transition: color 0.18s ease;
+        }
+
+        .category-card:hover .category-icon,
+        .category-card.active .category-icon {
+            color: var(--eoc-cyan);
+        }
+
+        .category-card.disaster-cat:hover .category-icon,
+        .category-card.disaster-cat.active .category-icon {
+            color: var(--eoc-red);
+        }
+
+        .category-card.normal-cat:hover .category-icon,
+        .category-card.normal-cat.active .category-icon {
+            color: var(--eoc-green);
+        }
+
+        .category-title {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--eoc-text-primary);
+            letter-spacing: 0.3px;
+        }
+
+        .category-badge {
+            font-size: 9px;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .category-badge.alert {
+            background-color: var(--eoc-red-bg);
+            color: var(--eoc-red);
+            border: 1px solid rgba(248, 113, 113, 0.3);
+        }
+
+        .category-badge.routine {
+            background-color: var(--eoc-green-bg);
+            color: var(--eoc-green);
+            border: 1px solid rgba(52, 211, 153, 0.3);
+        }
+
+        /* Form Inputs & Controls */
+        .tactical-input-group {
+            margin-bottom: 18px;
+        }
+
+        .tactical-label {
+            display: block;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            color: var(--eoc-text-muted);
+            margin-bottom: 6px;
+        }
+
+        .tactical-textarea {
+            width: 100%;
+            background-color: var(--eoc-bg-sidebar);
+            border: 1px solid var(--eoc-border);
+            border-radius: 6px;
+            color: var(--eoc-text-primary);
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            line-height: 1.5;
+            padding: 12px 14px;
+            outline: none;
+            box-sizing: border-box;
+            transition: border-color 0.18s ease;
+            resize: vertical;
+            min-height: 96px;
+        }
+
+        .tactical-textarea:focus {
+            border-color: var(--eoc-cyan);
+            background-color: #0c1422;
+        }
+
+        .tactical-input {
+            width: 100%;
+            background-color: var(--eoc-bg-sidebar);
+            border: 1px solid var(--eoc-border);
+            border-radius: 6px;
+            color: var(--eoc-text-primary);
+            font-family: 'Inter', sans-serif;
+            font-size: 12px;
+            padding: 9px 12px;
+            outline: none;
+            box-sizing: border-box;
+            transition: border-color 0.18s ease;
+        }
+
+        .tactical-input:focus {
+            border-color: var(--eoc-cyan);
+        }
+
+        .tactical-input.mono {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+        }
+
+        .tactical-input[readonly] {
+            background-color: #070D18;
+            color: var(--eoc-text-secondary);
+            cursor: not-allowed;
+            border-color: rgba(38, 54, 76, 0.5);
+        }
+
+        /* Coordinate Jurisdiction Box */
+        .coord-jurisdiction-box {
+            background-color: var(--eoc-bg-sidebar);
+            border: 1px solid var(--eoc-border);
+            border-radius: 6px;
+            padding: 16px 18px;
+            margin-bottom: 18px;
+        }
+
+        .coord-box-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            border-bottom: 1px solid rgba(38, 54, 76, 0.6);
+            padding-bottom: 8px;
+        }
+
+        .coord-box-title {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--eoc-cyan);
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .coord-grid-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr auto;
+            gap: 10px;
+            align-items: flex-end;
+        }
+
+        /* Photo Upload Dropzone */
+        .photo-dropzone-box {
+            border: 2px dashed var(--eoc-border);
+            border-radius: 8px;
+            padding: 24px;
+            text-align: center;
+            background-color: rgba(13, 22, 37, 0.6);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .photo-dropzone-box:hover,
+        .photo-dropzone-box.dragover {
+            border-color: var(--eoc-cyan);
+            background-color: rgba(34, 211, 238, 0.04);
+        }
+
+        .photo-preview-card {
+            display: none;
+            margin-top: 12px;
+            background-color: var(--eoc-bg-sidebar);
+            border: 1px solid var(--eoc-border);
+            border-radius: 6px;
+            padding: 12px 16px;
+        }
+
+        .photo-preview-layout {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .photo-preview-img {
+            width: 90px;
+            height: 65px;
+            object-fit: cover;
+            border-radius: 4px;
+            border: 1px solid var(--eoc-border);
+        }
+
+        /* Submit Button */
+        .btn-dispatch-primary {
+            width: 100%;
+            background-color: var(--eoc-cyan);
+            border: none;
+            color: #080E19;
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            padding: 14px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.18s ease;
+            box-shadow: 0 4px 14px rgba(34, 211, 238, 0.25);
+        }
+
+        .btn-dispatch-primary:hover {
+            background-color: #67E8F9;
+            box-shadow: 0 6px 20px rgba(34, 211, 238, 0.4);
+            transform: translateY(-1px);
+        }
+
+        .btn-dispatch-primary:disabled {
+            background-color: var(--eoc-border);
+            color: var(--eoc-text-muted);
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+
+        /* Pulsing & Normal Pins */
+        .custom-pin-wrapper {
+            background: transparent;
+            border: none;
+        }
+
+        .pulsing-pin {
+            width: 16px;
+            height: 16px;
+            background: var(--eoc-red);
+            border: 2px solid #FFFFFF;
+            border-radius: 50%;
+            box-shadow: 0 0 12px rgba(248, 113, 113, 0.9);
+            animation: pulse-pin 1.6s infinite;
+        }
+
+        @keyframes pulse-pin {
+            0% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(248, 113, 113, 0.7); }
+            70% { transform: scale(1.1); box-shadow: 0 0 0 10px rgba(248, 113, 113, 0); }
+            100% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(248, 113, 113, 0); }
+        }
+
+        .normal-pin {
+            width: 14px;
+            height: 14px;
+            background: var(--eoc-green);
+            border: 2px solid #FFFFFF;
+            border-radius: 50%;
+            box-shadow: 0 0 8px rgba(52, 211, 153, 0.7);
+        }
+
+        /* Dark Leaflet Popup Overrides */
+        .leaflet-popup-content-wrapper {
+            background: var(--eoc-bg-card) !important;
+            border: 1px solid var(--eoc-border) !important;
+            border-radius: 8px !important;
+            color: var(--eoc-text-primary) !important;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7) !important;
+            padding: 4px !important;
+        }
+
+        .leaflet-popup-tip {
+            background: var(--eoc-bg-card) !important;
+            border: 1px solid var(--eoc-border) !important;
+        }
+
+        .map-popup-card {
+            padding: 10px 12px;
+            max-width: 280px;
+        }
+
+        .map-popup-img {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 4px;
+            border: 1px solid var(--eoc-border);
+            margin: 8px 0;
+            display: block;
+        }
+
+        /* Responsive Form Controls */
+        @media (max-width: 1100px) {
+            .category-select-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            .coord-grid-layout {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .category-select-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .coord-grid-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body class="eoc-body">
+
+    <div class="eoc-layout">
+        <!-- ===================================================================
+             1. FIXED LEFT SIDEBAR (Standard EventTrust v2.5 Application Shell)
+             =================================================================== -->
+        <aside class="eoc-sidebar">
+            <div class="eoc-sidebar-header">
+                <div class="eoc-brand-logo">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                    </svg>
+                </div>
+                <div class="eoc-brand-text">
+                    <div class="eoc-brand-name">
+                        EventTrust <span class="eoc-brand-badge">v2.5</span>
+                    </div>
+                    <div class="eoc-brand-sub">Field Operations Center</div>
+                </div>
+            </div>
+
+            <nav class="eoc-sidebar-nav">
+                <div class="eoc-nav-section-label">Field Operations</div>
+                
+                <a href="#overview-section" class="eoc-nav-item active" id="nav-item-overview">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="14" width="7" height="7"></rect>
+                        <rect x="3" y="14" width="7" height="7"></rect>
+                    </svg>
+                    <span class="eoc-nav-text">Volunteer Overview</span>
+                </a>
+
+                <a href="#report-section" class="eoc-nav-item" id="nav-item-report">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                    <span class="eoc-nav-text">New Incident Report</span>
+                </a>
+
+                <a href="#zone-map-section" class="eoc-nav-item" id="nav-item-map">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon>
+                        <line x1="8" y1="2" x2="8" y2="18"></line>
+                        <line x1="16" y1="6" x2="16" y2="22"></line>
+                    </svg>
+                    <span class="eoc-nav-text">Sector Map</span>
+                </a>
+
+                <a href="#history-section" class="eoc-nav-item" id="nav-item-history">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                        <polyline points="10 9 9 9 8 9"></polyline>
+                    </svg>
+                    <span class="eoc-nav-text">My Incident Reports</span>
+                </a>
+
+                <div class="eoc-nav-section-label">Intelligence</div>
+
+                <a href="{% url 'Graph' %}" class="eoc-nav-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="20" x2="18" y2="10"></line>
+                        <line x1="12" y1="20" x2="12" y2="4"></line>
+                        <line x1="6" y1="20" x2="6" y2="14"></line>
+                    </svg>
+                    <span class="eoc-nav-text">Model Comparison &amp; Accuracy</span>
+                </a>
+
+                <a href="{% url 'MapView' %}" class="eoc-nav-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
+                    </svg>
+                    <span class="eoc-nav-text">Full GIS View</span>
+                </a>
+            </nav>
+
+            <!-- Sidebar Footer Profile -->
+            <div class="eoc-sidebar-footer">
+                <div class="eoc-profile-box">
+                    <div class="eoc-profile-avatar">
+                        {{ username|slice:":2"|upper|default:"VO" }}
+                    </div>
+                    <div class="eoc-profile-info">
+                        <div class="eoc-profile-name">{{ username|default:"Field Volunteer" }}</div>
+                        <div class="eoc-profile-role">
+                            <span class="eoc-telemetry-dot"></span> Field Volunteer
+                        </div>
+                        <div style="font-size: 10px; color: var(--eoc-text-muted); margin-top: 2px;">
+                            {{ user_ward|default:"Ward 14" }}
+                        </div>
+                    </div>
+                </div>
+                <a href="{% url 'Logout' %}" class="eoc-btn-logout">
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                    </svg>
+                    <span>Sign Out</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- ===================================================================
+             2. MAIN WORKSPACE CONTENT
+             =================================================================== -->
+        <main class="eoc-main" id="overview-section">
+
+            <!-- TOP COMMAND BAR -->
+            <header class="eoc-topbar">
+                <div class="eoc-topbar-left">
+                    <div class="eoc-breadcrumb">
+                        <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                        </svg>
+                        Municipal Operations / Field Telemetry Dispatch
+                    </div>
+                    <h1 class="eoc-page-title">Field Operations Command Terminal</h1>
+                    <div style="font-size: 12px; color: var(--eoc-text-secondary); margin-top: 2px;">
+                        Municipal Incident Reporting &bull; Sector: <strong style="color: var(--eoc-cyan);">{{ user_zone|default:"Zone 3 - South Education & Tech (MBU)" }}</strong> &bull; Ward: <span style="color: var(--eoc-amber);">{{ user_ward|default:"Ward 14 - Sree Sainath Nagar" }}</span>
+                    </div>
+                </div>
+                <div class="eoc-topbar-right">
+                    <div class="eoc-threat-pill stable">
+                        <span class="eoc-pulse-dot"></span>
+                        <span>Sector Dispatch: Online</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- SYSTEM TELEMETRY STRIP -->
+            <div class="eoc-telemetry-strip">
+                <div class="eoc-telemetry-item">
+                    <span class="eoc-telemetry-dot"></span>
+                    <span>Blockchain: <strong>Truffle Devnet</strong></span>
+                    <code>Chain ID 5777</code>
+                </div>
+                <div class="eoc-telemetry-item">
+                    <span class="eoc-telemetry-dot blue"></span>
+                    <span>Field Sector: <strong style="color: var(--eoc-cyan);">{{ user_zone|default:"Zone 3 - MBU" }}</strong></span>
+                </div>
+                <div class="eoc-telemetry-item">
+                    <span class="eoc-telemetry-dot purple"></span>
+                    <span>AI Engine: <strong>Gemini 3.5 Flash Vision + 2D CNN</strong></span>
+                </div>
+                <div class="eoc-telemetry-item">
+                    <span class="eoc-telemetry-dot"></span>
+                    <span>GPS Geolocation: <strong id="telemetryGpsStatus" style="color: var(--eoc-green);">Active (13.6214, 79.2903)</strong></span>
+                </div>
+                <div class="eoc-telemetry-item" style="margin-left: auto;">
+                    <span>Volunteer Session: <strong>{{ username|default:"Field Volunteer" }}</strong></span>
+                </div>
+            </div>
+
+            <!-- Role-Based Access Restriction Alert Banner -->
+            {% if access_denied_msg %}
+            <div style="display: flex; align-items: center; gap: 12px; width: 100%; padding: 14px 18px; margin-bottom: 24px; border-radius: 6px; font-size: 13px; font-weight: 600; background-color: var(--eoc-red-bg); border: 1px solid var(--eoc-red); color: var(--eoc-red); box-sizing: border-box;">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+                <div>
+                    <strong>ACCESS RESTRICTED:</strong> {{ access_denied_msg }}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- ===================================================================
+                 SECTION B: VOLUNTEER KPI CARDS (4 Cards in One Row)
+                 =================================================================== -->
+            <div class="eoc-kpi-row">
+                <div class="eoc-kpi-card cyan eoc-tilt-card">
+                    <div class="eoc-kpi-header">
+                        <span class="eoc-kpi-label">Zone Reports Filed</span>
+                        <svg class="eoc-kpi-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                        </svg>
+                    </div>
+                    <div class="eoc-kpi-value"><span class="eoc-counter" data-counter-target="{{ my_events_count|default:'0' }}">{{ my_events_count|default:"0" }}</span></div>
+                    <div class="eoc-kpi-sub">Authenticated Incident Feeds</div>
+                </div>
+
+                <div class="eoc-kpi-card red eoc-tilt-card disaster">
+                    <div class="eoc-kpi-header">
+                        <span class="eoc-kpi-label">Confirmed Disasters</span>
+                        <svg class="eoc-kpi-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                    </div>
+                    <div class="eoc-kpi-value"><span class="eoc-counter" data-counter-target="{{ my_disasters_count|default:'0' }}">{{ my_disasters_count|default:"0" }}</span></div>
+                    <div class="eoc-kpi-sub">AI Multi-Modal Verified</div>
+                </div>
+
+                <div class="eoc-kpi-card green eoc-tilt-card verified">
+                    <div class="eoc-kpi-header">
+                        <span class="eoc-kpi-label">Blockchain Anchored</span>
+                        <svg class="eoc-kpi-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                        </svg>
+                    </div>
+                    <div class="eoc-kpi-value"><span class="eoc-counter" data-counter-target="100">100</span>%</div>
+                    <div class="eoc-kpi-sub">SHA-256 Smart Contract State</div>
+                </div>
+
+                <div class="eoc-kpi-card amber eoc-tilt-card">
+                    <div class="eoc-kpi-header">
+                        <span class="eoc-kpi-label">Volunteer Credibility</span>
+                        <svg class="eoc-kpi-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                        </svg>
+                    </div>
+                    <div class="eoc-kpi-value"><span class="eoc-counter" data-counter-target="{{ volunteer_score|default:'98' }}">{{ volunteer_score|default:"98" }}</span> / 100</div>
+                    <div class="eoc-kpi-sub">Consensus Reputation Rating</div>
+                </div>
+            </div>
+
+            <!-- Dynamic Post-Submission AI & Blockchain Result Feedback Container -->
+            {% if data %}
+            <div class="eoc-panel" style="margin-bottom: 24px; background-color: var(--eoc-bg-card); border: 1px solid var(--eoc-border); border-radius: 8px; padding: 20px;">
+                <div style="font-size: 11px; font-weight: 700; color: var(--eoc-cyan); text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 12px; display: flex; align-items: center; gap: 6px;">
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                    </svg>
+                    <span>LATEST DISPATCH INTELLIGENCE FEEDBACK</span>
+                </div>
+                {{ data|safe }}
+            </div>
+            {% endif %}
+
+            <!-- ===================================================================
+                 SECTION C: LIVE SECTOR GEOSPATIAL MAP
+                 =================================================================== -->
+            <section id="zone-map-section" class="eoc-map-panel">
+                <div class="eoc-panel-header">
+                    <div>
+                        <div class="eoc-panel-title">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon>
+                                <line x1="8" y1="2" x2="8" y2="18"></line>
+                                <line x1="16" y1="6" x2="16" y2="22"></line>
+                            </svg>
+                            <span>LIVE SECTOR GEOSPATIAL MAP &bull; {{ user_zone|default:"Assigned Sector" }}</span>
+                        </div>
+                        <div style="font-size: 11px; color: var(--eoc-text-secondary); margin-top: 3px;">
+                            Real-time field incident monitoring across your assigned municipal sector using ESRI World Imagery
+                        </div>
+                    </div>
+                    <div class="eoc-map-controls">
+                        <div class="eoc-btn-filter-group">
+                            <button type="button" class="eoc-btn-filter active" id="btnFilterAll" onclick="filterMap('all', this)">All Pins</button>
+                            <button type="button" class="eoc-btn-filter" id="btnFilterDisaster" onclick="filterMap('disaster', this)">Disasters Only</button>
+                            <button type="button" class="eoc-btn-filter" id="btnFilterNormal" onclick="filterMap('normal', this)">Normal Events</button>
+                        </div>
+                    </div>
+                </div>
+                <div style="position: relative; overflow: hidden; border-radius: 6px;">
+                    <div id="volunteerMap" class="eoc-map-canvas" style="height: 440px;"></div>
+                    <div class="tactical-radar-overlay">
+                        <div class="tactical-radar-beam"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===================================================================
+                 SECTION D: FORMAL FIELD INCIDENT DISPATCH
+                 =================================================================== -->
+            <section id="report-section" class="eoc-lab-panel" style="background-color: var(--eoc-bg-card); border: 1px solid var(--eoc-border); border-radius: 8px; margin-bottom: 24px; overflow: hidden;">
+                <div class="eoc-panel-header">
+                    <div>
+                        <div class="eoc-panel-title">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="12" y1="5" x2="12" y2="19"></line>
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                            </svg>
+                            <span>FORMAL FIELD INCIDENT DISPATCH</span>
+                        </div>
+                        <div style="font-size: 11px; color: var(--eoc-text-secondary); margin-top: 3px;">
+                            Submit verified field observations for AI validation and Emergency Operations Center review
+                        </div>
+                    </div>
+                    <span class="eoc-badge-blockchain verified">ZONE REPORTER AUTHORIZED</span>
+                </div>
+
+                <div style="padding: 24px;">
+                    <form name="f1" id="fieldIncidentForm" method="post" action="{% url 'PredictAction' %}" enctype="multipart/form-data" onsubmit="handleFormSubmit(event)">
+                        {% csrf_token %}
+                        <input type="hidden" name="source_dashboard" value="volunteer">
+
+                        <!-- PART 1: INCIDENT CLASSIFICATION TEMPLATES -->
+                        <div style="margin-bottom: 20px;">
+                            <label class="tactical-label">Incident Classification Template Quick-Fill</label>
+                            <div class="category-select-grid">
+                                <!-- Flash Flood -->
+                                <div class="category-card disaster-cat" onclick="selectCategory('URGENT: Flash flood waters rising rapidly, submerging access roads and commercial ground floors.', this)">
+                                    <div class="category-icon">
+                                        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="category-title">Flash Flood</div>
+                                    <span class="category-badge alert">Disaster</span>
+                                </div>
+
+                                <!-- Structural Fire -->
+                                <div class="category-card disaster-cat" onclick="selectCategory('CRITICAL: Major commercial building structural fire reported, heavy smoke and emergency units deploying.', this)">
+                                    <div class="category-icon">
+                                        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                                        </svg>
+                                    </div>
+                                    <div class="category-title">Structural Fire</div>
+                                    <span class="category-badge alert">Critical</span>
+                                </div>
+
+                                <!-- Structural Damage -->
+                                <div class="category-card disaster-cat" onclick="selectCategory('EMERGENCY: Structural collapse of old facade following seismic tremors. Debris blocking transit line.', this)">
+                                    <div class="category-icon">
+                                        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                            <line x1="3" y1="9" x2="21" y2="9"></line>
+                                            <line x1="9" y1="21" x2="9" y2="9"></line>
+                                        </svg>
+                                    </div>
+                                    <div class="category-title">Structural Damage</div>
+                                    <span class="category-badge alert">Disaster</span>
+                                </div>
+
+                                <!-- Hazardous Leak -->
+                                <div class="category-card disaster-cat" onclick="selectCategory('ALERT: Hazardous chemical or industrial toxic leak detected near transit depot. Immediate evacuation required.', this)">
+                                    <div class="category-icon">
+                                        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <circle cx="12" cy="12" r="10"></circle>
+                                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                                        </svg>
+                                    </div>
+                                    <div class="category-title">Hazardous Leak</div>
+                                    <span class="category-badge alert">Hazard</span>
+                                </div>
+
+                                <!-- Routine Normal Event -->
+                                <div class="category-card normal-cat" onclick="selectCategory('Routine academic seminar and presentation in campus auditorium. All normal and calm.', this)">
+                                    <div class="category-icon">
+                                        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                                        </svg>
+                                    </div>
+                                    <div class="category-title">Routine Normal</div>
+                                    <span class="category-badge routine">Normal</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- PART 2: INCIDENT OBSERVATION TEXTAREA -->
+                        <div class="tactical-input-group">
+                            <label class="tactical-label" for="incidentText">Incident Observation / Field Description</label>
+                            <textarea name="t1" id="incidentText" class="tactical-textarea" placeholder="Describe what you observed, the severity, nearby landmarks and any immediate risks..." required></textarea>
+                            <div style="font-size: 11px; color: var(--eoc-text-muted); margin-top: 4px;">
+                                Natural language field report analyzed via 2D CNN NLP classifier and cross-referenced with photo features.
+                            </div>
+                        </div>
+
+                        <!-- PART 3: PINPOINT INCIDENT COORDINATES & JURISDICTION -->
+                        <div class="coord-jurisdiction-box">
+                            <div class="coord-box-header">
+                                <div class="coord-box-title">
+                                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="12" cy="12" r="10"></circle>
+                                        <line x1="12" y1="2" x2="12" y2="6"></line>
+                                        <line x1="12" y1="18" x2="12" y2="22"></line>
+                                        <line x1="2" y1="12" x2="6" y2="12"></line>
+                                        <line x1="18" y1="12" x2="22" y2="12"></line>
+                                    </svg>
+                                    <span>Pinpoint Incident Coordinates &amp; Jurisdiction</span>
+                                </div>
+                                <span id="gpsLiveBadge" style="font-size: 10px; font-family: 'JetBrains Mono', monospace; color: var(--eoc-green);">GPS Sensor: Ready</span>
+                            </div>
+
+                            <div class="coord-grid-layout">
+                                <div>
+                                    <label class="tactical-label" style="font-size: 10px;">Sector Zone</label>
+                                    <input type="text" name="zone" id="inputZone" class="tactical-input" value="{{ user_zone|default:'Zone 3 - South Education & Tech (MBU)' }}" readonly>
+                                </div>
+                                <div>
+                                    <label class="tactical-label" style="font-size: 10px;">Assigned Ward</label>
+                                    <input type="text" name="ward" id="inputWard" class="tactical-input" value="{{ user_ward|default:'Ward 14 - Sree Sainath Nagar' }}">
+                                </div>
+                                <div>
+                                    <label class="tactical-label" style="font-size: 10px;">Latitude</label>
+                                    <input type="text" name="latitude" id="inputLat" class="tactical-input mono" value="13.621400" required>
+                                </div>
+                                <div>
+                                    <label class="tactical-label" style="font-size: 10px;">Longitude</label>
+                                    <input type="text" name="longitude" id="inputLng" class="tactical-input mono" value="79.290300" required>
+                                </div>
+                                <div>
+                                    <button type="button" id="btnAutoDetectGPS" class="eoc-btn-action" onclick="detectGPSLocation()" style="padding: 9px 14px; white-space: nowrap; height: 38px;">
+                                        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <circle cx="12" cy="12" r="10"></circle>
+                                            <line x1="12" y1="2" x2="12" y2="6"></line>
+                                            <line x1="12" y1="18" x2="12" y2="22"></line>
+                                            <line x1="2" y1="12" x2="6" y2="12"></line>
+                                            <line x1="18" y1="12" x2="22" y2="12"></line>
+                                        </svg>
+                                        <span id="gpsBtnText">Auto-Detect GPS</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- PART 4: PHOTOGRAPHIC FIELD EVIDENCE -->
+                        <div class="tactical-input-group">
+                            <label class="tactical-label">Photographic Field Evidence (Gemini 3.5 Flash Vision Corroboration)</label>
+                            
+                            <input type="file" id="eventImageInput" name="event_image" accept=".jpg,.jpeg,.png,.webp" style="display:none;" onchange="handleImageSelect(event)">
+                            
+                            <div class="photo-dropzone-box" id="photoDropzone" onclick="document.getElementById('eventImageInput').click();" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
+                                <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="var(--eoc-cyan)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin: 0 auto 8px; display: block;">
+                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                    <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                    <polyline points="21 15 16 10 5 21"></polyline>
+                                </svg>
+                                <div style="font-weight: 700; color: var(--eoc-text-primary); font-size: 13px; margin-bottom: 4px;">Click or drag &amp; drop field incident photograph here</div>
+                                <div style="font-size: 11px; color: var(--eoc-text-muted);">
+                                    Accepts JPG, PNG, WEBP (up to 5 MB) &bull; Cross-modal verification evaluated against text report to eliminate false alarms
+                                </div>
+                            </div>
+
+                            <div id="imagePreviewCard" class="photo-preview-card">
+                                <div class="photo-preview-layout">
+                                    <img id="imagePreviewImg" class="photo-preview-img" src="" alt="Staged incident photo">
+                                    <div style="flex: 1; min-width: 0;">
+                                        <div id="imagePreviewName" style="font-size: 12px; font-weight: 700; color: var(--eoc-text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></div>
+                                        <div id="imagePreviewSize" style="font-size: 11px; color: var(--eoc-green); font-family: 'JetBrains Mono', monospace; margin-top: 3px;"></div>
+                                        <button type="button" class="eoc-btn-action dispatch" onclick="removeImage()" style="margin-top: 8px; padding: 4px 10px; font-size: 11px;">
+                                            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                                            <span>Remove Photo</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- PART 6: FINAL REPORT DISPATCH ACTION -->
+                        <div style="margin-top: 24px;">
+                            <button type="submit" id="btnDispatchReport" class="btn-dispatch-primary">
+                                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                                </svg>
+                                <span id="dispatchBtnText">Dispatch Report to EOC &bull; Anchor on Blockchain</span>
+                            </button>
+                            <div style="font-size: 11px; color: var(--eoc-text-muted); text-align: center; margin-top: 8px;">
+                                Submitting calculates multi-modal consensus, appends cryptographic hash to Ethereum, and notifies EOC officers.
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <!-- ===================================================================
+                 SECTION E: SECTOR INCIDENT TELEMETRY LOG (My Field Incident History)
+                 =================================================================== -->
+            <section id="history-section" class="eoc-table-panel">
+                <div class="eoc-table-controls">
+                    <div>
+                        <div class="eoc-panel-title">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <line x1="16" y1="13" x2="8" y2="13"></line>
+                                <line x1="16" y1="17" x2="8" y2="17"></line>
+                            </svg>
+                            <span>MY FIELD INCIDENT HISTORY &bull; SECTOR TELEMETRY LOG</span>
+                        </div>
+                        <div style="font-size: 11px; color: var(--eoc-text-secondary); margin-top: 3px;">
+                            Historical incident records submitted by your authenticated account
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <input type="text" id="volunteerTableSearch" class="eoc-search-input" placeholder="Search my incidents by ward or description..." onkeyup="filterHistoryTable()">
+                        <span class="eoc-badge-blockchain verified">{{ events|length }} Records</span>
+                    </div>
+                </div>
+
+                <div class="eoc-table-responsive">
+                    <table class="eoc-table" id="historyIncidentTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Photo</th>
+                                <th>Ward</th>
+                                <th>Observation Description</th>
+                                <th>AI Classification</th>
+                                <th>Trust Score</th>
+                                <th>Blockchain State</th>
+                                <th>Timestamp</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for ev in events %}
+                            <tr>
+                                <td>
+                                    <span style="font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--eoc-cyan);">#{{ ev.id }}</span>
+                                </td>
+                                <td>
+                                    {% if ev.image_url %}
+                                    <a href="{{ ev.image_url }}" target="_blank">
+                                        <img src="{{ ev.image_url }}" style="width: 50px; height: 38px; object-fit: cover; border-radius: 4px; border: 1px solid var(--eoc-border);" alt="Incident photo">
+                                    </a>
+                                    {% else %}
+                                    <span style="font-size: 11px; color: var(--eoc-text-muted);">No photo</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="eoc-badge-class normal" style="background-color: var(--eoc-bg-elevated); color: var(--eoc-text-primary); border-color: var(--eoc-border);">{{ ev.ward|default:"Ward 14" }}</span>
+                                </td>
+                                <td style="max-width: 300px; word-break: break-word;">
+                                    <span style="color: var(--eoc-text-primary);">"{{ ev.tweet }}"</span>
+                                </td>
+                                <td>
+                                    {% if 'disaster' in ev.classification|lower %}
+                                    <span class="eoc-badge-class disaster">{{ ev.classification }}</span>
+                                    {% else %}
+                                    <span class="eoc-badge-class normal">{{ ev.classification }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="eoc-score-wrap">
+                                        <span class="eoc-score-num" style="color: {% if ev.trust_score >= 70 %}var(--eoc-green){% elif ev.trust_score >= 40 %}var(--eoc-amber){% else %}var(--eoc-red){% endif %};">
+                                            {{ ev.trust_score }} / 100
+                                        </span>
+                                        <div class="eoc-score-bar-bg">
+                                            <div class="eoc-score-bar-fill" style="width: {{ ev.trust_score }}%; background-color: {% if ev.trust_score >= 70 %}var(--eoc-green){% elif ev.trust_score >= 40 %}var(--eoc-amber){% else %}var(--eoc-red){% endif %};"></div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    {% if ev.blockchain_tx_hash %}
+                                    <span class="eoc-badge-blockchain verified" title="Tx: {{ ev.blockchain_tx_hash }}">ANCHORED</span>
+                                    {% else %}
+                                    <span class="eoc-badge-blockchain pending">PENDING</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--eoc-text-muted);">{{ ev.created_at|slice:":16" }}</span>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="8" style="text-align: center; padding: 36px; color: var(--eoc-text-muted);">
+                                    No incident reports currently logged in this sector.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- ===================================================================
+         3. SCRIPTING ENGINE & FUNCTIONALITY PRESERVATION
+         =================================================================== -->
+    <script>
+        let map;
+        let markersGroup;
+        const allEventData = {{ events_json|safe|default:"[]" }};
+
+        // Initialize Live Sector Geospatial Map
+        function initMap() {
+            const defaultLat = 13.6214;
+            const defaultLng = 79.2903;
+
+            map = L.map('volunteerMap', {
+                center: [defaultLat, defaultLng],
+                zoom: 13,
+                zoomControl: true
+            });
+
+            // ESRI World Imagery satellite tiles (Zero API keys, zero rate-limiting)
+            L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                attribution: '&copy; Esri World Imagery &bull; USGS, AeroGRID, IGN',
+                maxZoom: 19
+            }).addTo(map);
+
+            markersGroup = L.layerGroup().addTo(map);
+            renderMarkers('all');
+        }
+
+        function createPinIcon(isDisaster) {
+            const className = isDisaster ? 'pulsing-pin' : 'normal-pin';
+            return L.divIcon({
+                className: 'custom-pin-wrapper',
+                html: `<div class="${className}"></div>`,
+                iconSize: [18, 18],
+                iconAnchor: [9, 9]
+            });
+        }
+
+        function renderMarkers(filterType) {
+            markersGroup.clearLayers();
+            const bounds = [];
+
+            allEventData.forEach(ev => {
+                const isDisaster = (ev.classification || '').toLowerCase().includes('disaster');
+                if (filterType === 'disaster' && !isDisaster) return;
+                if (filterType === 'normal' && isDisaster) return;
+
+                const lat = parseFloat(ev.latitude);
+                const lng = parseFloat(ev.longitude);
+                if (isNaN(lat) || isNaN(lng)) return;
+
+                bounds.push([lat, lng]);
+
+                const marker = L.marker([lat, lng], {
+                    icon: createPinIcon(isDisaster)
+                });
+
+                const imgHtml = ev.image_url ? `<img src="${ev.image_url}" class="map-popup-img" alt="Incident Photo"/>` : '';
+
+                const popupContent = `
+                    <div class="map-popup-card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                            <span style="font-size: 10px; font-weight: 700; color: ${isDisaster ? '#F87171' : '#34D399'}; text-transform: uppercase;">
+                                ${isDisaster ? 'DISASTER INCIDENT' : 'NORMAL EVENT'}
+                            </span>
+                            <span style="font-size: 11px; font-family: 'JetBrains Mono', monospace; color: #94A3B8;">#${ev.id}</span>
+                        </div>
+                        ${imgHtml}
+                        <div style="font-size: 11px; color: #94A3B8; line-height: 1.4;">
+                            <strong style="color: #F1F5F9;">Ward:</strong> ${ev.ward || 'General'}<br/>
+                            <strong style="color: #F1F5F9;">Trust:</strong> <span style="color: ${ev.trust_score >= 70 ? '#34D399' : '#F87171'}; font-weight: 700;">${ev.trust_score}/100</span><br/>
+                            "${(ev.tweet || '').substring(0, 85)}${(ev.tweet || '').length > 85 ? '...' : ''}"
+                        </div>
+                    </div>
+                `;
+
+                marker.bindPopup(popupContent);
+                markersGroup.addLayer(marker);
+            });
+
+            if (bounds.length > 0) {
+                map.fitBounds(bounds, { padding: [40, 40], maxZoom: 14 });
+            }
+        }
+
+        function filterMap(type, btn) {
+            document.querySelectorAll('#zone-map-section .eoc-btn-filter').forEach(b => b.classList.remove('active'));
+            if (btn) btn.classList.add('active');
+            renderMarkers(type);
+        }
+
+        // Category Card Selection
+        function selectCategory(text, cardEl) {
+            document.querySelectorAll('.category-card').forEach(c => c.classList.remove('active'));
+            if (cardEl) cardEl.classList.add('active');
+            const textarea = document.getElementById('incidentText');
+            textarea.value = text;
+            textarea.focus();
+        }
+
+        // Auto-Detect GPS Geolocation
+        function detectGPSLocation() {
+            const btn = document.getElementById('btnAutoDetectGPS');
+            const btnText = document.getElementById('gpsBtnText');
+            const statusEl = document.getElementById('telemetryGpsStatus');
+            const badgeEl = document.getElementById('gpsLiveBadge');
+
+            if (!("geolocation" in navigator)) {
+                alert("Geolocation is not supported by your browser environment. Using sector centroid.");
+                return;
+            }
+
+            btn.disabled = true;
+            btnText.textContent = "Acquiring Fix...";
+            badgeEl.textContent = "GPS Sensor: Acquiring...";
+            badgeEl.style.color = "var(--eoc-amber)";
+
+            navigator.geolocation.getCurrentPosition(
+                function(pos) {
+                    const lat = pos.coords.latitude.toFixed(6);
+                    const lng = pos.coords.longitude.toFixed(6);
+                    document.getElementById('inputLat').value = lat;
+                    document.getElementById('inputLng').value = lng;
+                    
+                    statusEl.textContent = `Acquired (${lat}, ${lng})`;
+                    statusEl.style.color = "var(--eoc-green)";
+                    badgeEl.textContent = `Fix Acquired: ${lat}, ${lng}`;
+                    badgeEl.style.color = "var(--eoc-green)";
+
+                    btn.disabled = false;
+                    btnText.textContent = "GPS Acquired";
+
+                    // Center map on live fix if initialized
+                    if (map) {
+                        map.setView([pos.coords.latitude, pos.coords.longitude], 15);
+                    }
+                },
+                function(err) {
+                    badgeEl.textContent = "GPS Sensor: Centroid Default";
+                    badgeEl.style.color = "var(--eoc-text-muted)";
+                    btn.disabled = false;
+                    btnText.textContent = "Auto-Detect GPS";
+                    alert("GPS signal unavailable or permission denied (" + err.message + "). Maintained default sector centroid coordinates.");
+                },
+                { timeout: 8000, enableHighAccuracy: true }
+            );
+        }
+
+        // Photographic Evidence Drag & Drop and Preview Handlers
+        function handleImageSelect(event) {
+            const file = event.target.files[0];
+            if (file) {
+                renderImagePreview(file);
+            }
+        }
+
+        function renderImagePreview(file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('imagePreviewImg').src = e.target.result;
+                document.getElementById('imagePreviewName').textContent = file.name;
+                document.getElementById('imagePreviewSize').textContent = (file.size / 1024).toFixed(1) + " KB (Staged for Gemini Multi-Modal Ingestion)";
+                document.getElementById('imagePreviewCard').style.display = 'block';
+                document.getElementById('photoDropzone').style.borderColor = 'var(--eoc-green)';
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function removeImage() {
+            document.getElementById('eventImageInput').value = '';
+            document.getElementById('imagePreviewCard').style.display = 'none';
+            document.getElementById('imagePreviewImg').src = '';
+            document.getElementById('photoDropzone').style.borderColor = 'var(--eoc-border)';
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            document.getElementById('photoDropzone').classList.add('dragover');
+        }
+
+        function handleDragLeave(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            document.getElementById('photoDropzone').classList.remove('dragover');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            document.getElementById('photoDropzone').classList.remove('dragover');
+            if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                const file = e.dataTransfer.files[0];
+                document.getElementById('eventImageInput').files = e.dataTransfer.files;
+                renderImagePreview(file);
+            }
+        }
+
+        // Real-Time Table Filter for Personal History
+        function filterHistoryTable() {
+            const input = document.getElementById('volunteerTableSearch');
+            const filter = input.value.toLowerCase();
+            const table = document.getElementById('historyIncidentTable');
+            const tr = table.getElementsByTagName('tr');
+
+            for (let i = 1; i < tr.length; i++) {
+                const tdWard = tr[i].getElementsByTagName('td')[2];
+                const tdDesc = tr[i].getElementsByTagName('td')[3];
+                const tdClass = tr[i].getElementsByTagName('td')[4];
+                if (tdWard || tdDesc || tdClass) {
+                    const txtWard = tdWard ? tdWard.textContent || tdWard.innerText : '';
+                    const txtDesc = tdDesc ? tdDesc.textContent || tdDesc.innerText : '';
+                    const txtClass = tdClass ? tdClass.textContent || tdClass.innerText : '';
+                    if (txtWard.toLowerCase().indexOf(filter) > -1 || 
+                        txtDesc.toLowerCase().indexOf(filter) > -1 || 
+                        txtClass.toLowerCase().indexOf(filter) > -1) {
+                        tr[i].style.display = "";
+                    } else {
+                        tr[i].style.display = "none";
+                    }
+                }
+            }
+        }
+
+        // Form Submission State Management (Tactical 5-Stage Blockchain Pipeline)
+        function handleFormSubmit(e) {
+            const btn = document.getElementById('btnDispatchReport');
+            const btnText = document.getElementById('dispatchBtnText');
+            btn.disabled = true;
+            btnText.textContent = "Anchoring Report on Blockchain...";
+
+            if (window.launchSubmissionPipeline) {
+                window.launchSubmissionPipeline({
+                    title: 'Anchoring Field Report',
+                    stages: [
+                        { id: 1, title: 'Field Evidence Ingestion', sub: 'Packaging incident narrative, photographic asset & GPS telemetry' },
+                        { id: 2, title: 'Multimodal Neural Analysis', sub: 'TF-IDF Vectorizer + 2D-CNN & Gemini 2.5 Flash Vision' },
+                        { id: 3, title: 'Composite Trust Metric Evaluation', sub: 'Calibrating Cryptographic, DL Confidence & Vision weights' },
+                        { id: 4, title: 'Decentralized Blockchain Anchoring', sub: 'Executing Web3 RPC transaction to Ethereum Devnet Contract' },
+                        { id: 5, title: 'Ledger State Confirmation', sub: 'Immutable SHA-256 state proof committed' }
+                    ]
+                });
+            }
+            return true;
+        }
+
+        // Highlight Active Nav on Scroll
+        window.addEventListener('scroll', function() {
+            const sections = ['overview-section', 'report-section', 'zone-map-section', 'history-section'];
+            const navMap = {
+                'overview-section': 'nav-item-overview',
+                'report-section': 'nav-item-report',
+                'zone-map-section': 'nav-item-map',
+                'history-section': 'nav-item-history'
+            };
+
+            let current = 'overview-section';
+            sections.forEach(secId => {
+                const el = document.getElementById(secId);
+                if (el) {
+                    const rect = el.getBoundingClientRect();
+                    if (rect.top <= 180) {
+                        current = secId;
+                    }
+                }
+            });
+
+            document.querySelectorAll('.eoc-sidebar-nav .eoc-nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            const activeNav = document.getElementById(navMap[current]);
+            if (activeNav) {
+                activeNav.classList.add('active');
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', initMap);
+    </script>
+
+    <!-- 3D Scripts & Motion Engine -->
+    <script src="{% static 'three.min.js' %}"></script>
+    <script src="{% static 'tactical_motion.js' %}"></script>
+    <script src="{% static 'tactical_ambient3d.js' %}"></script>
+</body>
+</html>

@@ -1,0 +1,826 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Municipal Emergency Operations Center (EOC) Command Dashboard - EventTrust Platform">
+    <title>EOC Command Center &bull; EventTrust</title>
+
+    <!-- Google Fonts: Inter & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Leaflet.js Mapping Infrastructure -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+    <!-- Chart.js Engine -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+    <!-- Tactical Command Center CSS -->
+    <link rel="stylesheet" type="text/css" href="{% static 'officer_tactical.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'tactical_motion.css' %}">
+</head>
+<body class="eoc-body">
+
+    <div class="eoc-layout">
+        <!-- 1. FIXED LEFT SIDEBAR -->
+        <aside class="eoc-sidebar">
+            <div class="eoc-sidebar-header">
+                <div class="eoc-brand-logo">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                    </svg>
+                </div>
+                <div class="eoc-brand-text">
+                    <div class="eoc-brand-name">
+                        EventTrust <span class="eoc-brand-badge">v2.5</span>
+                    </div>
+                    <div class="eoc-brand-sub">Emergency Ops Command</div>
+                </div>
+            </div>
+
+            <nav class="eoc-sidebar-nav">
+                <div class="eoc-nav-section-label">Operations</div>
+                
+                <a href="#overview-section" class="eoc-nav-item active">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="14" width="7" height="7"></rect>
+                        <rect x="3" y="14" width="7" height="7"></rect>
+                    </svg>
+                    <span class="eoc-nav-text">Command Overview</span>
+                </a>
+
+                <a href="#city-map-section" class="eoc-nav-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon>
+                        <line x1="8" y1="2" x2="8" y2="18"></line>
+                        <line x1="16" y1="6" x2="16" y2="22"></line>
+                    </svg>
+                    <span class="eoc-nav-text">Tactical City Map</span>
+                </a>
+
+                <a href="#queue-section" class="eoc-nav-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="8" y1="6" x2="21" y2="6"></line>
+                        <line x1="8" y1="12" x2="21" y2="12"></line>
+                        <line x1="8" y1="18" x2="21" y2="18"></line>
+                        <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                        <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                        <line x1="3" y1="18" x2="3.01" y2="18"></line>
+                    </svg>
+                    <span class="eoc-nav-text">Incident Registry</span>
+                </a>
+
+                <a href="#integrity-lab-section" class="eoc-nav-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                    </svg>
+                    <span class="eoc-nav-text">Integrity Verification</span>
+                </a>
+
+                <div class="eoc-nav-section-label">Intelligence</div>
+
+                <a href="{% url 'Graph' %}" class="eoc-nav-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="20" x2="18" y2="10"></line>
+                        <line x1="12" y1="20" x2="12" y2="4"></line>
+                        <line x1="6" y1="20" x2="6" y2="14"></line>
+                    </svg>
+                    <span class="eoc-nav-text">Model Comparison &amp; Accuracy</span>
+                </a>
+
+                <a href="#analytics-section" class="eoc-nav-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                    <span class="eoc-nav-text">Crisis Analytics</span>
+                </a>
+
+                <a href="{% url 'MapView' %}" class="eoc-nav-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
+                    </svg>
+                    <span class="eoc-nav-text">Full Geospatial Room</span>
+                </a>
+            </nav>
+
+            <div class="eoc-sidebar-footer">
+                <div class="eoc-profile-box">
+                    <div class="eoc-profile-avatar">
+                        {{ username|slice:":2"|upper|default:"OF" }}
+                    </div>
+                    <div class="eoc-profile-info">
+                        <div class="eoc-profile-name">{{ username|default:"Officer Rahul" }}</div>
+                        <div class="eoc-profile-role">
+                            <span class="eoc-telemetry-dot" style="width:5px; height:5px;"></span>
+                            <span>EOC Command Officer</span>
+                        </div>
+                    </div>
+                </div>
+
+                <a href="{% url 'Logout' %}" class="eoc-btn-logout">
+                    <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                    </svg>
+                    <span>Sign Out</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- 2. SCROLLABLE MAIN CONTENT WORKSPACE -->
+        <main class="eoc-main eoc-page-enter">
+            <!-- Top Command Bar -->
+            <header class="eoc-topbar" id="overview-section">
+                <div class="eoc-topbar-left">
+                    <div class="eoc-breadcrumb">
+                        <span>Municipal EOC</span>
+                        <span>/</span>
+                        <span>Central Operational Intelligence</span>
+                    </div>
+                    <h1 class="eoc-page-title">Disaster Operations Command Center</h1>
+                </div>
+
+                <div class="eoc-topbar-right">
+                    <div class="eoc-threat-pill {% if active_disasters > 0 %}critical{% else %}stable{% endif %}">
+                        <div class="tactical-beacon" style="margin-right: 2px;">
+                            <div class="tactical-beacon-dot {% if active_disasters > 0 %}disaster{% else %}verified{% endif %}"></div>
+                            <div class="tactical-beacon-ring {% if active_disasters > 0 %}disaster{% else %}verified{% endif %}"></div>
+                        </div>
+                        <span>{% if active_disasters > 0 %}Threat Level: Critical Alert{% else %}Threat Level: Baseline Stable{% endif %}</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- System Telemetry Strip -->
+            <section class="eoc-telemetry-strip">
+                <div class="eoc-telemetry-item">
+                    <div class="tactical-beacon">
+                        <div class="tactical-beacon-dot verified"></div>
+                        <div class="tactical-beacon-ring verified"></div>
+                    </div>
+                    <span>Blockchain: <strong>Truffle Devnet</strong></span>
+                </div>
+                <div class="eoc-telemetry-item">
+                    <span class="eoc-telemetry-dot blue"></span>
+                    <span>Chain ID: <strong>5777</strong></span>
+                </div>
+                <div class="eoc-telemetry-item">
+                    <span class="eoc-telemetry-dot blue"></span>
+                    <span>Auditing Engine: <strong>SHA-256 On-Chain</strong></span>
+                </div>
+                <div class="eoc-telemetry-item">
+                    <span class="eoc-telemetry-dot purple"></span>
+                    <span>AI Engines: <strong>Gemini 2.5 Flash + 2D CNN</strong></span>
+                </div>
+                <div class="eoc-telemetry-item">
+                    <div class="tactical-beacon">
+                        <div class="tactical-beacon-dot"></div>
+                    </div>
+                    <span>Session: <strong>{{ username|default:"Active Officer" }}</strong></span>
+                </div>
+            </section>
+
+            <!-- Executive KPI Row -->
+            <section class="eoc-kpi-row">
+                <!-- Card 1: Total City Reports -->
+                <div class="eoc-kpi-card cyan eoc-tilt-card">
+                    <div class="eoc-kpi-header">
+                        <span class="eoc-kpi-label">Total City Reports</span>
+                        <svg class="eoc-kpi-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                        </svg>
+                    </div>
+                    <div class="eoc-kpi-value"><span class="eoc-counter" data-counter-target="{{ total_events }}">{{ total_events }}</span></div>
+                    <div class="eoc-kpi-sub">Covering all 5 municipal operational zones</div>
+                </div>
+
+                <!-- Card 2: Active Disasters -->
+                <div class="eoc-kpi-card red eoc-tilt-card disaster">
+                    <div class="eoc-kpi-header">
+                        <span class="eoc-kpi-label">Active Disasters</span>
+                        <svg class="eoc-kpi-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon>
+                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                    </div>
+                    <div class="eoc-kpi-value"><span class="eoc-counter" data-counter-target="{{ active_disasters }}">{{ active_disasters }}</span></div>
+                    <div class="eoc-kpi-sub">Requiring immediate emergency deployment</div>
+                </div>
+
+                <!-- Card 3: False Alarms -->
+                <div class="eoc-kpi-card amber eoc-tilt-card">
+                    <div class="eoc-kpi-header">
+                        <span class="eoc-kpi-label">False Alarms</span>
+                        <svg class="eoc-kpi-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                            <line x1="12" y1="9" x2="12" y2="13"></line>
+                            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                        </svg>
+                    </div>
+                    <div class="eoc-kpi-value"><span class="eoc-counter" data-counter-target="{{ false_alarms }}">{{ false_alarms }}</span></div>
+                    <div class="eoc-kpi-sub">Neutralized via Gemini Vision mismatch analysis</div>
+                </div>
+
+                <!-- Card 4: Blockchain Anchored -->
+                <div class="eoc-kpi-card green eoc-tilt-card verified">
+                    <div class="eoc-kpi-header">
+                        <span class="eoc-kpi-label">Blockchain Anchored</span>
+                        <svg class="eoc-kpi-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                        </svg>
+                    </div>
+                    <div class="eoc-kpi-value"><span class="eoc-counter" data-counter-target="{{ blockchain_anchored }}">{{ blockchain_anchored }}</span> / {{ total_events }}</div>
+                    <div class="eoc-kpi-sub">Cryptographically verified on Ethereum ledger</div>
+                </div>
+            </section>
+
+            <!-- Full-Width Tactical City Map -->
+            <section class="eoc-map-panel" id="city-map-section">
+                <div class="eoc-panel-header">
+                    <div class="eoc-panel-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon>
+                            <line x1="8" y1="2" x2="8" y2="18"></line>
+                            <line x1="16" y1="6" x2="16" y2="22"></line>
+                        </svg>
+                        <span>City Emergency Operations / Live GEOINT</span>
+                    </div>
+
+                    <div class="eoc-map-controls">
+                        <!-- Zone Selector -->
+                        <select id="zoneFilter" class="eoc-select" onchange="applyFilters()">
+                            <option value="all">All Municipal Zones</option>
+                            <option value="Zone 1 - Central Commercial">Zone 1: Central Commercial</option>
+                            <option value="Zone 2 - North Industrial">Zone 2: North Industrial</option>
+                            <option value="Zone 3 - South Education & Tech (MBU)">Zone 3: South Education (MBU)</option>
+                            <option value="Zone 4 - East Residential">Zone 4: East Residential</option>
+                            <option value="Zone 5 - West Riverfront">Zone 5: West Riverfront</option>
+                        </select>
+
+                        <!-- Classification Filter -->
+                        <div class="eoc-btn-filter-group">
+                            <button class="eoc-btn-filter active" onclick="setStatusFilter('all', this)">All</button>
+                            <button class="eoc-btn-filter" onclick="setStatusFilter('disaster', this)">Disasters</button>
+                            <button class="eoc-btn-filter" onclick="setStatusFilter('normal', this)">Normal</button>
+                            <button class="eoc-btn-filter" onclick="setStatusFilter('false_alarm', this)">False Alarms</button>
+                        </div>
+
+                        <!-- Basemap Switcher -->
+                        <div class="eoc-btn-filter-group">
+                            <button class="eoc-btn-filter active" id="btnLayerSat" onclick="switchEocBaseLayer('satellite')">Satellite</button>
+                            <button class="eoc-btn-filter" id="btnLayerStreet" onclick="switchEocBaseLayer('street')">Street</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="position: relative; overflow: hidden; border-radius: 6px;">
+                    <div id="officerMap" class="eoc-map-canvas"></div>
+                    <div class="tactical-radar-overlay">
+                        <div class="tactical-radar-beam"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Analytics Section (2 Charts Side by Side) -->
+            <section class="eoc-analytics-row" id="analytics-section">
+                <!-- Bar Chart: Zone Crisis Density -->
+                <div class="eoc-analytics-card">
+                    <div class="eoc-panel-header">
+                        <div class="eoc-panel-title">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="18" y1="20" x2="18" y2="10"></line>
+                                <line x1="12" y1="20" x2="12" y2="4"></line>
+                                <line x1="6" y1="20" x2="6" y2="14"></line>
+                            </svg>
+                            <span>Zone-Wise Crisis Incident Density</span>
+                        </div>
+                        <span style="font-size:10px; font-weight:700; color:var(--eoc-cyan); text-transform:uppercase; letter-spacing:0.5px;">Live Distribution</span>
+                    </div>
+                    <div class="eoc-chart-wrapper">
+                        <canvas id="zoneIncidentChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Doughnut Chart: AI Classification Ratio -->
+                <div class="eoc-analytics-card">
+                    <div class="eoc-panel-header">
+                        <div class="eoc-panel-title">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="8" x2="12" y2="12"></line>
+                                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                            </svg>
+                            <span>Multi-Modal AI Classification Ratio</span>
+                        </div>
+                        <span style="font-size:10px; font-weight:700; color:#A855F7; text-transform:uppercase; letter-spacing:0.5px;">Gemini + 2D CNN</span>
+                    </div>
+                    <div class="eoc-chart-wrapper">
+                        <canvas id="classificationDoughnutChart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Incident Operations Queue Table -->
+            <section class="eoc-table-panel" id="queue-section">
+                <div class="eoc-table-controls">
+                    <div class="eoc-panel-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="8" y1="6" x2="21" y2="6"></line>
+                            <line x1="8" y1="12" x2="21" y2="12"></line>
+                            <line x1="8" y1="18" x2="21" y2="18"></line>
+                            <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                            <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                            <line x1="3" y1="18" x2="3.01" y2="18"></line>
+                        </svg>
+                        <span>Incident Operations Queue</span>
+                    </div>
+
+                    <div style="display: flex; gap: 8px;">
+                        <input type="text" id="tableSearch" placeholder="Search incidents by keyword or ID..." class="eoc-search-input" onkeyup="filterTable()">
+                        
+                        <select id="tableClassFilter" class="eoc-select" onchange="filterTable()">
+                            <option value="all">All Classifications</option>
+                            <option value="disaster">Disaster Only</option>
+                            <option value="normal">Normal Only</option>
+                            <option value="false">False Alarm Only</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="eoc-table-responsive">
+                    <table class="eoc-table" id="incidentsTable">
+                        <thead>
+                            <tr>
+                                <th>Event ID</th>
+                                <th>Photo</th>
+                                <th>Volunteer</th>
+                                <th>Zone / Ward</th>
+                                <th>Incident Description</th>
+                                <th>AI Classification</th>
+                                <th>Trust Score</th>
+                                <th>Blockchain Status</th>
+                                <th>Consensus</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for ev in events %}
+                            <tr class="event-row" data-zone="{{ ev.zone }}" data-class="{{ ev.classification|lower }}">
+                                <td>
+                                    <strong style="color:var(--eoc-text-primary); font-family:'JetBrains Mono',monospace;">#{{ ev.id }}</strong>
+                                </td>
+                                <td>
+                                    {% if ev.image_url %}
+                                    <a href="{{ ev.image_url }}" target="_blank">
+                                        <img src="{{ ev.image_url }}" alt="Evidence" style="width:36px; height:36px; object-fit:cover; border-radius:4px; border:1px solid var(--eoc-border);">
+                                    </a>
+                                    {% else %}
+                                    <span style="font-size:10px; color:var(--eoc-text-muted); font-style:italic;">No photo</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <strong style="color:var(--eoc-text-primary);">{{ ev.username|default:"Field Volunteer" }}</strong>
+                                </td>
+                                <td>
+                                    <div style="font-size:11px; color:var(--eoc-text-primary); font-weight:600;">{{ ev.zone|default:"Zone 3 (MBU)" }}</div>
+                                    <div style="font-size:10px; color:var(--eoc-text-muted);">{{ ev.ward|default:"Ward 14" }}</div>
+                                </td>
+                                <td style="max-width: 260px; line-height: 1.4;">
+                                    <span style="color:var(--eoc-text-secondary);">"{{ ev.tweet }}"</span>
+                                </td>
+                                <td>
+                                    {% if 'disaster' in ev.classification|lower %}
+                                    <span class="eoc-badge-class disaster">Disaster Event</span>
+                                    {% elif 'mismatch' in ev.classification|lower or 'false' in ev.classification|lower %}
+                                    <span class="eoc-badge-class warning">False Alarm</span>
+                                    {% else %}
+                                    <span class="eoc-badge-class normal">Normal Event</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="eoc-score-wrap">
+                                        <div class="eoc-score-bar-bg">
+                                            <div class="eoc-score-bar-fill" style="width: {{ ev.trust_score }}%; background-color: {% if ev.trust_score >= 70 %}var(--eoc-green){% elif ev.trust_score >= 40 %}var(--eoc-amber){% else %}var(--eoc-red){% endif %};"></div>
+                                        </div>
+                                        <span class="eoc-score-num" style="color: {% if ev.trust_score >= 70 %}var(--eoc-green){% elif ev.trust_score >= 40 %}var(--eoc-amber){% else %}var(--eoc-red){% endif %};">
+                                            {{ ev.trust_score }}
+                                        </span>
+                                    </div>
+                                </td>
+                                <td>
+                                    {% if ev.blockchain_status_html %}
+                                        {{ ev.blockchain_status_html|safe }}
+                                    {% elif ev.blockchain_tx_hash %}
+                                        <span class="eoc-badge-blockchain verified">VERIFIED</span>
+                                    {% else %}
+                                        <span class="eoc-badge-blockchain pending">Pending</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if ev.consensus_html %}
+                                        {{ ev.consensus_html|safe }}
+                                    {% else %}
+                                        <span style="font-size:10px; color:var(--eoc-text-muted);">0 Confirmed</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div style="display: flex; gap: 6px;">
+                                        <a href="{% url 'VerifyIntegrity' %}?event_id={{ ev.id }}" class="eoc-btn-action" title="Inspect On-Chain Proof">
+                                            Verify
+                                        </a>
+                                        <button type="button" class="eoc-btn-action dispatch" onclick="openDispatchModal('{{ ev.id }}', '{{ ev.ward|default:'Sector 14' }}')">
+                                            Dispatch
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="10" align="center" style="padding: 32px; color: var(--eoc-text-muted);">
+                                    No incident records currently available in the operations ledger.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Cryptographic Integrity Verification Lab -->
+            <section class="eoc-lab-panel" id="integrity-lab-section">
+                <div class="eoc-panel-header">
+                    <div class="eoc-panel-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                        </svg>
+                        <span>Cryptographic Integrity Verification Lab</span>
+                    </div>
+                    <span style="font-size:10px; font-weight:700; color:var(--eoc-green); text-transform:uppercase; letter-spacing:0.5px;">Zero-Trust Architecture</span>
+                </div>
+
+                <div class="eoc-lab-grid">
+                    <!-- Panel A: Instant Integrity Audit -->
+                    <div class="eoc-lab-card">
+                        <div class="eoc-lab-card-title">Instant Event ID Integrity Audit</div>
+                        <div class="eoc-lab-card-desc">
+                            Cross-references the canonical SHA-256 hash in Supabase against the on-chain immutable hash recorded in the Ethereum smart contract.
+                        </div>
+                        <form method="get" action="{% url 'VerifyIntegrity' %}" class="eoc-audit-form">
+                            <input type="number" name="event_id" placeholder="Enter Event ID" class="eoc-input-id" required>
+                            <button type="submit" class="eoc-btn-audit">Audit Event Integrity</button>
+                        </form>
+                    </div>
+
+                    <!-- Panel B: Tamper Simulation -->
+                    <div class="eoc-lab-card">
+                        <div class="eoc-lab-card-title">Tamper Simulation &amp; Recovery</div>
+                        <div class="eoc-lab-card-desc">
+                            Simulate an unauthorized database modification to demonstrate how the Ethereum smart contract hard-gates and flags compromised records.
+                        </div>
+                        <div class="eoc-simulation-buttons">
+                            <a href="{% url 'SimulateTamper' %}" class="eoc-btn-sim tamper">
+                                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                                </svg>
+                                <span>Simulate Tamper (Event #35)</span>
+                            </a>
+                            <a href="{% url 'RestoreEvent' %}" class="eoc-btn-sim restore">
+                                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="23 4 23 10 17 10"></polyline>
+                                    <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                                </svg>
+                                <span>Restore Authentic Event</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Dispatch Confirmation Modal -->
+    <div id="dispatchModal" class="eoc-modal-backdrop">
+        <div class="eoc-modal-card">
+            <div style="font-size:14px; font-weight:800; color:var(--eoc-red); text-transform:uppercase; letter-spacing:0.6px; margin-bottom:8px; display:flex; align-items:center; gap:8px;">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon>
+                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+                <span>Confirm Emergency Dispatch Protocol</span>
+            </div>
+            <div id="dispatchModalText" style="font-size:12px; color:var(--eoc-text-secondary); line-height:1.5; margin-bottom:20px;">
+                Are you sure you want to deploy the municipal disaster response team?
+            </div>
+            <div style="display:flex; justify-content:flex-end; gap:10px;">
+                <button type="button" class="eoc-btn-action" onclick="closeDispatchModal()">Cancel</button>
+                <button type="button" class="eoc-btn-action dispatch" id="confirmDispatchBtn">Confirm Deployment</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Leaflet GIS & Chart.js Application Scripts -->
+    <script>
+        const allEventData = {{ events_json|safe|default:"[]" }};
+        let officerMap;
+        let markersGroup;
+        let currentBaseLayer;
+        let currentStatusFilter = 'all';
+
+        // High-Resolution Non-Rate-Limited ESRI Base Layers
+        const eocTileLayers = {
+            satellite: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                attribution: '&copy; Esri &copy; Earthstar Geographics',
+                maxZoom: 19
+            }),
+            street: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+                attribution: '&copy; Esri World Street Map',
+                maxZoom: 19
+            })
+        };
+
+        function initEocMap() {
+            officerMap = L.map('officerMap', {
+                center: [13.6288, 79.3500],
+                zoom: 12,
+                zoomControl: true
+            });
+
+            currentBaseLayer = eocTileLayers.satellite;
+            currentBaseLayer.addTo(officerMap);
+
+            markersGroup = L.layerGroup().addTo(officerMap);
+            renderMapMarkers();
+        }
+
+        function switchEocBaseLayer(layerKey) {
+            officerMap.removeLayer(currentBaseLayer);
+            currentBaseLayer = eocTileLayers[layerKey];
+            currentBaseLayer.addTo(officerMap);
+
+            document.getElementById('btnLayerSat').classList.toggle('active', layerKey === 'satellite');
+            document.getElementById('btnLayerStreet').classList.toggle('active', layerKey === 'street');
+        }
+
+        function getMarkerIcon(classification) {
+            const cls = (classification || '').toLowerCase();
+            let color = '#34D399';
+            let isDisaster = false;
+
+            if (cls.includes('disaster')) {
+                color = '#F87171';
+                isDisaster = true;
+            } else if (cls.includes('mismatch') || cls.includes('false')) {
+                color = '#FBBF24';
+            }
+
+            const html = isDisaster
+                ? `<div style="width:16px; height:16px; background:#F87171; border:2px solid #ffffff; border-radius:50%; box-shadow:0 0 10px #F87171; position:relative;">
+                     <div style="position:absolute; top:-6px; left:-6px; width:24px; height:24px; border-radius:50%; background:rgba(248,113,113,0.4); animation:eoc-pulse 1.6s infinite ease-out;"></div>
+                   </div>`
+                : `<div style="width:14px; height:14px; background:${color}; border:2px solid #ffffff; border-radius:50%; box-shadow:0 0 6px ${color};"></div>`;
+
+            return L.divIcon({
+                className: 'custom-eoc-pin',
+                html: html,
+                iconSize: [20, 20],
+                iconAnchor: [10, 10]
+            });
+        }
+
+        function renderMapMarkers() {
+            markersGroup.clearLayers();
+            const zoneSelected = document.getElementById('zoneFilter').value;
+            const bounds = [];
+
+            allEventData.forEach(ev => {
+                const cls = (ev.classification || '').toLowerCase();
+                const isDisaster = cls.includes('disaster');
+                const isFalse = cls.includes('mismatch') || cls.includes('false');
+
+                if (currentStatusFilter === 'disaster' && !isDisaster) return;
+                if (currentStatusFilter === 'normal' && (isDisaster || isFalse)) return;
+                if (currentStatusFilter === 'false_alarm' && !isFalse) return;
+                if (zoneSelected !== 'all' && ev.zone && !ev.zone.toLowerCase().includes(zoneSelected.toLowerCase())) return;
+
+                const lat = parseFloat(ev.latitude);
+                const lng = parseFloat(ev.longitude);
+                if (isNaN(lat) || isNaN(lng)) return;
+
+                bounds.push([lat, lng]);
+
+                const marker = L.marker([lat, lng], {
+                    icon: getMarkerIcon(ev.classification)
+                });
+
+                const imgHtml = ev.image_url 
+                    ? `<img src="${ev.image_url}" style="width:100%; height:95px; object-fit:cover; border-radius:4px; margin:6px 0; border:1px solid #26364C;" alt="Incident Photo"/>` 
+                    : '';
+
+                const popupHtml = `
+                    <div style="font-family:'Inter',sans-serif; min-width:220px; color:#F1F5F9;">
+                        <div style="font-size:12px; font-weight:800; color:${isDisaster ? '#F87171' : isFalse ? '#FBBF24' : '#34D399'}; display:flex; justify-content:space-between; margin-bottom:4px;">
+                            <span>${isDisaster ? 'DISASTER INCIDENT' : isFalse ? 'FALSE ALARM FLAGGED' : 'NORMAL EVENT'}</span>
+                            <span style="font-family:'JetBrains Mono',monospace; color:#94A3B8;">#${ev.id}</span>
+                        </div>
+                        ${imgHtml}
+                        <div style="font-size:11px; color:#94A3B8; line-height:1.4; margin-bottom:8px;">
+                            <div><strong>Zone:</strong> ${ev.zone || 'Metropolitan'}</div>
+                            <div><strong>Ward:</strong> ${ev.ward || 'General Sector'}</div>
+                            <div><strong>Trust Score:</strong> <span style="font-weight:700; color:${ev.trust_score >= 70 ? '#34D399' : '#F87171'};">${ev.trust_score}/100</span></div>
+                            <div><strong>Coordinates:</strong> <code>${lat.toFixed(4)}, ${lng.toFixed(4)}</code></div>
+                            <div style="margin-top:4px; font-style:italic;">"${(ev.tweet || '').substring(0, 65)}..."</div>
+                        </div>
+                        <div style="display:flex; gap:6px; margin-top:8px;">
+                            <a href="/VerifyIntegrity?event_id=${ev.id}" style="background:#18263A; color:#22D3EE; border:1px solid #26364C; padding:4px 8px; border-radius:4px; font-size:10px; font-weight:700; text-decoration:none; flex:1; text-align:center;">
+                                Audit Proof
+                            </a>
+                            <button onclick="openDispatchModal('${ev.id}', '${ev.ward || ''}')" style="background:rgba(248,113,113,0.15); color:#F87171; border:1px solid #F87171; padding:4px 8px; border-radius:4px; font-size:10px; font-weight:700; cursor:pointer;">
+                                Dispatch
+                            </button>
+                        </div>
+                    </div>
+                `;
+
+                marker.bindPopup(popupHtml);
+                markersGroup.addLayer(marker);
+            });
+
+            if (bounds.length > 0) {
+                officerMap.fitBounds(bounds, { padding: [50, 50], maxZoom: 14 });
+            }
+        }
+
+        function setStatusFilter(type, btn) {
+            currentStatusFilter = type;
+            btn.parentElement.querySelectorAll('.eoc-btn-filter').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderMapMarkers();
+        }
+
+        function applyFilters() {
+            renderMapMarkers();
+        }
+
+        function filterTable() {
+            const search = document.getElementById('tableSearch').value.toLowerCase();
+            const filterClass = document.getElementById('tableClassFilter').value;
+
+            document.querySelectorAll('#incidentsTable tbody tr.event-row').forEach(row => {
+                const text = row.innerText.toLowerCase();
+                const rowClass = row.getAttribute('data-class') || '';
+
+                const matchesSearch = text.includes(search);
+                let matchesClass = true;
+
+                if (filterClass === 'disaster') matchesClass = rowClass.includes('disaster');
+                else if (filterClass === 'normal') matchesClass = !rowClass.includes('disaster') && !rowClass.includes('false') && !rowClass.includes('mismatch');
+                else if (filterClass === 'false') matchesClass = rowClass.includes('false') || rowClass.includes('mismatch');
+
+                row.style.display = (matchesSearch && matchesClass) ? '' : 'none';
+            });
+        }
+
+        // Dispatch Modal Handlers
+        let pendingDispatchEventId = null;
+        let pendingDispatchWard = null;
+
+        function openDispatchModal(id, ward) {
+            pendingDispatchEventId = id;
+            pendingDispatchWard = ward;
+            document.getElementById('dispatchModalText').innerText = 
+                `Deploy municipal first-responder emergency units to Incident #${id} located in ${ward || 'designated sector'}? Protocol will alert Civil Defense, Fire Response, and Medical EMS teams.`;
+            document.getElementById('dispatchModal').style.display = 'flex';
+        }
+
+        function closeDispatchModal() {
+            document.getElementById('dispatchModal').style.display = 'none';
+            pendingDispatchEventId = null;
+            pendingDispatchWard = null;
+        }
+
+        document.getElementById('confirmDispatchBtn').addEventListener('click', function() {
+            alert(`DISPATCH INITIATED: Emergency deployment confirmed for Event #${pendingDispatchEventId} in ${pendingDispatchWard}.`);
+            closeDispatchModal();
+        });
+
+        // Initialize Analytics Charts
+        function initCharts() {
+            const zoneCounts = {
+                'Zone 1: Central': 0,
+                'Zone 2: North': 0,
+                'Zone 3: MBU South': 0,
+                'Zone 4: East': 0,
+                'Zone 5: West': 0
+            };
+
+            let disasterCount = 0;
+            let normalCount = 0;
+            let falseAlarmCount = 0;
+
+            allEventData.forEach(ev => {
+                const z = ev.zone || '';
+                if (z.includes('Zone 1')) zoneCounts['Zone 1: Central']++;
+                else if (z.includes('Zone 2')) zoneCounts['Zone 2: North']++;
+                else if (z.includes('Zone 3')) zoneCounts['Zone 3: MBU South']++;
+                else if (z.includes('Zone 4')) zoneCounts['Zone 4: East']++;
+                else if (z.includes('Zone 5')) zoneCounts['Zone 5: West']++;
+                else zoneCounts['Zone 3: MBU South']++;
+
+                const c = (ev.classification || '').toLowerCase();
+                if (c.includes('disaster')) disasterCount++;
+                else if (c.includes('false') || c.includes('mismatch')) falseAlarmCount++;
+                else normalCount++;
+            });
+
+            // Bar Chart (Zone Density)
+            const ctxZone = document.getElementById('zoneIncidentChart');
+            if (ctxZone) {
+                new Chart(ctxZone, {
+                    type: 'bar',
+                    data: {
+                        labels: Object.keys(zoneCounts),
+                        datasets: [{
+                            data: Object.values(zoneCounts),
+                            backgroundColor: '#18263A',
+                            borderColor: '#22D3EE',
+                            borderWidth: 1.5,
+                            borderRadius: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            x: {
+                                grid: { color: 'rgba(38, 54, 76, 0.5)' },
+                                ticks: { color: '#94A3B8', font: { family: 'Inter', size: 10 } }
+                            },
+                            y: {
+                                grid: { color: 'rgba(38, 54, 76, 0.5)' },
+                                ticks: { color: '#94A3B8', font: { family: 'Inter', size: 10 } }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Doughnut Chart (Classification Ratio)
+            const ctxDoughnut = document.getElementById('classificationDoughnutChart');
+            if (ctxDoughnut) {
+                new Chart(ctxDoughnut, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Confirmed Disasters', 'Normal Events', 'False Alarms Neutralized'],
+                        datasets: [{
+                            data: [disasterCount, normalCount, falseAlarmCount],
+                            backgroundColor: ['#F87171', '#34D399', '#FBBF24'],
+                            borderColor: '#121C2E',
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'right',
+                                labels: {
+                                    color: '#94A3B8',
+                                    font: { family: 'Inter', size: 11 },
+                                    boxWidth: 12
+                                }
+                            }
+                        },
+                        cutout: '72%'
+                    }
+                });
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            initEocMap();
+            initCharts();
+        });
+    </script>
+
+    <!-- 3D Scripts & Motion Engine -->
+    <script src="{% static 'three.min.js' %}"></script>
+    <script src="{% static 'tactical_motion.js' %}"></script>
+    <script src="{% static 'tactical_ambient3d.js' %}"></script>
+</body>
+</html>

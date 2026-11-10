@@ -4,16 +4,188 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Event Detection and Prediction using Blockchain and Deep Learning">
-    <meta name="keywords" content="blockchain, event detection, prediction, NLP, machine learning, deep learning">
-    <title>Event Detection &amp; Anchoring — TrustChain</title>
-    <link rel="stylesheet" type="text/css" href="{% static 'app.css' %}?v=2.6">
+    <meta name="description" content="Real-Time Event Detection & Cryptographic Anchoring - EventTrust">
+    <title>Event Detection Terminal &bull; EventTrust</title>
 
-    <!-- Preserved Form Validation Script -->
-    <script language="javascript">
+    <!-- Google Fonts: Inter & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <!-- Global Tactical Foundation -->
+    <link rel="stylesheet" type="text/css" href="{% static 'tactical_foundation.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'tactical_motion.css' %}">
+
+    <style>
+        .predict-workspace {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        .terminal-box {
+            background: #080E19;
+            border: 1px solid #26364C;
+            border-radius: 6px;
+            overflow: hidden;
+            margin-bottom: 18px;
+        }
+
+        .terminal-header-bar {
+            background: #0D1625;
+            padding: 8px 14px;
+            border-bottom: 1px solid #26364C;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 11px;
+            font-family: 'JetBrains Mono', monospace;
+            color: #94A3B8;
+        }
+
+        .terminal-textarea {
+            width: 100%;
+            background: transparent;
+            border: none;
+            padding: 16px;
+            color: #F1F5F9;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            line-height: 1.6;
+            resize: vertical;
+            outline: none;
+            box-sizing: border-box;
+        }
+
+        .terminal-textarea:focus {
+            background: rgba(34, 211, 238, 0.02);
+        }
+
+        .scenario-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .scenario-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .scenario-card-btn {
+            background: #18263A;
+            border: 1px solid #26364C;
+            border-radius: 6px;
+            padding: 12px 14px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.15s ease;
+            width: 100%;
+        }
+
+        .scenario-card-btn:hover {
+            border-color: #22D3EE;
+            background: rgba(34, 211, 238, 0.05);
+        }
+
+        .scenario-card-btn.active {
+            border-color: #22D3EE;
+            background: rgba(34, 211, 238, 0.12);
+        }
+
+        .image-upload-zone {
+            border: 2px dashed #26364C;
+            border-radius: 6px;
+            padding: 24px;
+            text-align: center;
+            background: rgba(24, 38, 58, 0.3);
+            cursor: pointer;
+            transition: all 0.15s ease;
+            margin-bottom: 20px;
+        }
+
+        .image-upload-zone:hover {
+            border-color: #22D3EE;
+            background: rgba(34, 211, 238, 0.04);
+        }
+
+        .pipeline-stepper {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #0D1625;
+            border: 1px solid #26364C;
+            border-radius: 6px;
+            padding: 14px 20px;
+            margin-top: 24px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .step-node {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #94A3B8;
+        }
+
+        .step-node.active {
+            color: #22D3EE;
+        }
+
+        .step-num {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #18263A;
+            border: 1px solid #26364C;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            color: #22D3EE;
+        }
+
+        .step-arrow {
+            color: #26364C;
+            font-size: 14px;
+        }
+
+        .prediction-result-banner {
+            border-radius: 8px;
+            padding: 20px 24px;
+            margin-bottom: 24px;
+            border: 1px solid #26364C;
+        }
+
+        .prediction-result-banner.disaster {
+            background: rgba(248, 113, 113, 0.1);
+            border-color: #F87171;
+        }
+
+        .prediction-result-banner.warning {
+            background: rgba(251, 191, 36, 0.1);
+            border-color: #FBBF24;
+        }
+
+        .prediction-result-banner.normal {
+            background: rgba(52, 211, 153, 0.1);
+            border-color: #34D399;
+        }
+    </style>
+
+    <script>
     function validate(formObj) {
-        if(formObj.t1.value.length==0) {
-            alert("Please Enter Event Post");
+        if(formObj.t1.value.trim().length === 0) {
+            alert("Please enter incident description or post text.");
             formObj.t1.focus();
             return false;
         }
@@ -33,7 +205,6 @@
         }
     }
 
-    // Image Upload & Validation Handlers
     function handleImageSelect(input) {
         var errorEl = document.getElementById("imageUploadError");
         var previewContainer = document.getElementById("imagePreviewBox");
@@ -50,8 +221,6 @@
         }
 
         var file = input.files[0];
-
-        // Allowed format whitelist: JPG, JPEG, PNG, WEBP
         var allowedExts = [".jpg", ".jpeg", ".png", ".webp"];
         var fileName = file.name.toLowerCase();
         var isValidExt = allowedExts.some(function(ext) { return fileName.endsWith(ext); });
@@ -66,7 +235,6 @@
             return;
         }
 
-        // Max 5 MB size limit
         var maxSize = 5 * 1024 * 1024;
         if (file.size > maxSize) {
             var sizeMB = (file.size / (1024 * 1024)).toFixed(2);
@@ -79,7 +247,6 @@
             return;
         }
 
-        // Display instant client-side preview
         var reader = new FileReader();
         reader.onload = function(e) {
             if (previewImg) previewImg.src = e.target.result;
@@ -113,7 +280,7 @@
             dropZone.addEventListener(evt, function(e) {
                 e.preventDefault();
                 e.stopPropagation();
-                dropZone.classList.add('drag-over');
+                dropZone.style.borderColor = '#22D3EE';
             }, false);
         });
 
@@ -121,7 +288,7 @@
             dropZone.addEventListener(evt, function(e) {
                 e.preventDefault();
                 e.stopPropagation();
-                dropZone.classList.remove('drag-over');
+                dropZone.style.borderColor = '#26364C';
             }, false);
         });
 
@@ -134,296 +301,326 @@
         }, false);
     });
     </script>
-
-    <!-- Three.js 3D WebGL Engine -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="{% static 'blockchain3d.js' %}"></script>
 </head>
 <body>
-    <!-- Fullscreen 3D Blockchain Ledger Mesh Background -->
-    <div id="blockchain-bg-canvas"></div>
 
-    <div class="app-shell">
-        <!-- Top Navigation Bar -->
-        <nav class="topbar">
-            <a href="{% url 'ViewTweets' %}" class="topbar-brand">
-                <div class="topbar-logo-crest">
-                    <svg class="svg-icon-lg" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+    <!-- Unified Tactical Topbar -->
+    <header class="tactical-topbar">
+        <div class="topbar-left">
+            {% if 'volunteer' in user_role|lower or 'volunteer' in username|lower %}
+            <a href="{% url 'VolunteerDashboard' %}" class="tactical-brand">
+            {% else %}
+            <a href="{% url 'OfficerDashboard' %}" class="tactical-brand">
+            {% endif %}
+                <div class="brand-crest">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                    </svg>
                 </div>
                 <div>
-                    <div class="topbar-title">TrustChain <span class="version-badge">v2.4</span></div>
-                    <div class="topbar-subtitle">Blockchain Event Intelligence</div>
+                    <div class="brand-title">EventTrust <span class="brand-version">Detector</span></div>
+                    <div class="brand-subtitle">AI &bull; Blockchain Event Ingestion</div>
                 </div>
             </a>
-            <div class="topbar-nav">
-                <a href="{% url 'TrainML' %}">
-                    <svg class="svg-icon" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
-                    Train ML &amp; DL
-                </a>
-                <a href="{% url 'Graph' %}">
-                    <svg class="svg-icon" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
-                    Comparison Graph
-                </a>
-                <a href="{% url 'Predict' %}" class="active">
-                    <svg class="svg-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                    Event Detection
-                </a>
-                <a href="{% url 'ViewTweets' %}">
-                    <svg class="svg-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-                    Event Registry
-                </a>
-                <a href="{% url 'VerifyIntegrity' %}">
-                    <svg class="svg-icon" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-                    Verify Integrity
-                </a>
-                <a href="{% url 'index' %}" class="nav-logout">
-                    <svg class="svg-icon" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
-                    Logout
-                </a>
-            </div>
+        </div>
+
+        <nav class="tactical-nav">
+            {% if 'volunteer' in user_role|lower or 'volunteer' in username|lower %}
+            <a href="{% url 'VolunteerDashboard' %}" class="nav-item">
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="7" r="4"></circle>
+                    <path d="M5.5 21a6.5 6.5 0 0 1 13 0"></path>
+                </svg>
+                <span>Volunteer Terminal</span>
+            </a>
+            {% else %}
+            <a href="{% url 'OfficerDashboard' %}" class="nav-item">
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="14" width="7" height="7"></rect>
+                    <rect x="3" y="14" width="7" height="7"></rect>
+                </svg>
+                <span>Officer EOC</span>
+            </a>
+            {% endif %}
+            <a href="{% url 'MapView' %}" class="nav-item">
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon>
+                    <line x1="8" y1="2" x2="8" y2="18"></line>
+                    <line x1="16" y1="6" x2="16" y2="22"></line>
+                </svg>
+                <span>Tactical Map</span>
+            </a>
+            <a href="{% url 'Predict' %}" class="nav-item active">
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <span>Detect Event</span>
+            </a>
+            <a href="{% url 'ViewTweets' %}" class="nav-item">
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                </svg>
+                <span>Ledger Registry</span>
+            </a>
+            <a href="{% url 'VerifyIntegrity' %}" class="nav-item">
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                </svg>
+                <span>Verify Proof</span>
+            </a>
+            <a href="{% url 'Logout' %}" class="nav-item" style="color: #F87171;">
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                    <polyline points="16 17 21 12 16 7"></polyline>
+                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                </svg>
+                <span>Exit</span>
+            </a>
         </nav>
+    </header>
 
-        <!-- Main Content -->
-        <main class="page-content">
-            <div style="max-width: 860px; margin: 0 auto;">
-
-                <!-- Display Prediction Result Card if data exists -->
-                {% if data %}
-                <div class="prediction-report-card {% if 'disaster' in data|lower %}disaster{% else %}normal{% endif %} animate-in">
-                    <div class="prediction-report-header">
-                        <div>
-                            <span class="report-badge {% if 'disaster' in data|lower %}disaster{% else %}normal{% endif %}">
-                                {% if 'disaster' in data|lower %}
-                                <svg class="svg-icon" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
-                                Critical Disaster Alert
-                                {% else %}
-                                <svg class="svg-icon" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-                                Standard Routine Event
-                                {% endif %}
-                            </span>
-                            <h2 style="font-size: 22px; font-weight: 800; margin-top: 8px;">
-                                {% if 'disaster' in data|lower %}Disaster Event Detected &amp; Anchored{% else %}Normal Event Verified &amp; Recorded{% endif %}
-                            </h2>
-                        </div>
-                        <div style="display: flex; gap: 8px;">
-                            <a href="{% url 'ViewTweets' %}" class="btn btn-secondary" style="padding: 8px 14px; font-size: 12px;">
-                                <svg class="svg-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
-                                View in Registry
-                            </a>
-                            <a href="{% url 'VerifyIntegrity' %}" class="btn btn-primary" style="padding: 8px 14px; font-size: 12px;">
-                                <svg class="svg-icon" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-                                Verify Proof
-                            </a>
-                        </div>
-                    </div>
-
-                    <!-- Preserved Data Container -->
-                    <div style="background: var(--bg-input); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 20px; font-size: 14px; line-height: 2;">
-                        {{ data|safe }}
-                    </div>
-                </div>
-                {% endif %}
-
-                <!-- Display Validation / Upload Error Banner if error_message exists -->
-                {% if error_message %}
-                <div class="alert alert-danger animate-in" style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); color: #fca5a5; padding: 14px 18px; border-radius: var(--radius-md); margin-bottom: 20px; display: flex; align-items: center; gap: 12px;">
-                    <svg class="svg-icon" viewBox="0 0 24 24" style="stroke: #ef4444; width: 20px; height: 20px; flex-shrink: 0;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-                    <div>
-                        <strong>Validation / Upload Error:</strong> {{ error_message }}
-                    </div>
-                </div>
-                {% endif %}
-
-                <!-- Event Input Card -->
-                <div class="card animate-in">
-                    <div class="card-header">
-                        <div class="card-header-icon cyan">
-                            <svg class="svg-icon-lg" viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
-                        </div>
-                        <div style="flex: 1;">
-                            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
-                                <h2>Real-Time Event Detection &amp; Blockchain Anchoring</h2>
-                                <span class="version-badge" style="background: rgba(0, 242, 254, 0.12); border: 1px solid rgba(0, 242, 254, 0.3); color: var(--accent-cyan); font-size: 11px; padding: 4px 10px;">2D CNN &bull; SHA-256</span>
-                            </div>
-                            <p>Deep Learning CNN classification with automated cryptographic immutability on Ethereum</p>
-                        </div>
-                    </div>
-
-                    <form name="f1" method="post" action="{% url 'PredictAction' %}" enctype="multipart/form-data" onsubmit="return validate(this);">
-                        {% csrf_token %}
-                        
-                        <!-- Terminal-style Input Wrapper -->
-                        <div class="terminal-input-wrapper">
-                            <div class="terminal-bar-top">
-                                <div class="terminal-dot-group">
-                                    <span></span><span></span><span></span>
-                                    <span style="margin-left: 8px; font-weight: 700; color: var(--text-secondary); white-space: nowrap; display: inline-block;">EVENT INGESTION BUFFER</span>
-                                </div>
-                                <span style="color: var(--accent-cyan); white-space: nowrap;">READY &bull; NLTK TOKENIZER ACTIVE</span>
-                            </div>
-                            <textarea id="eventInput" name="t1" rows="4" placeholder="Enter emergency alert, social media report, weather update, or community event..."></textarea>
-                        </div>
-
-                        <!-- Structured Scenario Selection Grid -->
-                        <div class="scenario-selector-header">
-                            <span class="scenario-selector-title">
-                                <svg class="svg-icon" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
-                                Quick Ingestion Scenarios
-                            </span>
-                            <span style="font-size: 11px; color: var(--text-muted);">Click to load simulation payload</span>
-                        </div>
-
-                        <div class="scenario-grid">
-                            <button type="button" class="scenario-card-btn" onclick="setSample('EMERGENCY: Severe thunderstorm warning issued with flash flooding and high winds detected in low-lying sectors.', this)">
-                                <div class="scenario-icon-box red">
-                                    <svg class="svg-icon" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
-                                </div>
-                                <div class="scenario-card-content">
-                                    <div class="scenario-card-header-row">
-                                        <span class="scenario-name">Flash Flood Alert</span>
-                                        <span class="scenario-badge-pill danger">Critical</span>
-                                    </div>
-                                    <div class="scenario-preview">Severe thunderstorm warning with high winds...</div>
-                                </div>
-                            </button>
-
-                            <button type="button" class="scenario-card-btn" onclick="setSample('CRITICAL: Category 4 hurricane approaching coastline, mandatory evacuation orders issued immediately.', this)">
-                                <div class="scenario-icon-box blue">
-                                    <svg class="svg-icon" viewBox="0 0 24 24"><path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2"></path></svg>
-                                </div>
-                                <div class="scenario-card-content">
-                                    <div class="scenario-card-header-row">
-                                        <span class="scenario-name">Coastal Hurricane</span>
-                                        <span class="scenario-badge-pill weather">Weather</span>
-                                    </div>
-                                    <div class="scenario-preview">Category 4 hurricane approaching coastline...</div>
-                                </div>
-                            </button>
-
-                            <button type="button" class="scenario-card-btn" onclick="setSample('URGENT: Major commercial structure fire reported downtown, multiple emergency response units deployed.', this)">
-                                <div class="scenario-icon-box orange">
-                                    <svg class="svg-icon" viewBox="0 0 24 24"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path></svg>
-                                </div>
-                                <div class="scenario-card-content">
-                                    <div class="scenario-card-header-row">
-                                        <span class="scenario-name">Urban Fire Hazard</span>
-                                        <span class="scenario-badge-pill warning">Urgent</span>
-                                    </div>
-                                    <div class="scenario-preview">Major structure fire reported downtown...</div>
-                                </div>
-                            </button>
-
-                            <button type="button" class="scenario-card-btn" onclick="setSample('Enjoying a peaceful sunny morning at the community park, coffee with friends today.', this)">
-                                <div class="scenario-icon-box green">
-                                    <svg class="svg-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
-                                </div>
-                                <div class="scenario-card-content">
-                                    <div class="scenario-card-header-row">
-                                        <span class="scenario-name">Routine Social Post</span>
-                                        <span class="scenario-badge-pill normal">Normal</span>
-                                    </div>
-                                    <div class="scenario-preview">Enjoying peaceful morning at the park...</div>
-                                </div>
-                            </button>
-                        </div>
-
-                        <!-- Optional Event Image Upload Zone -->
-                        <div class="image-upload-wrapper">
-                            <div class="image-upload-header">
-                                <span class="image-upload-title">
-                                    <svg class="svg-icon" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
-                                    Event Image <span class="badge-optional">(Optional)</span>
-                                </span>
-                                <span class="image-specs-badge">JPG, PNG, WEBP &bull; Max 5 MB</span>
-                            </div>
-
-                            <!-- Validation Error Message Area -->
-                            <div id="imageUploadError" class="image-validation-error" style="display: none;"></div>
-
-                            <!-- Drop Zone Area -->
-                            <div id="imageDropZone" class="image-dropzone" onclick="document.getElementById('event_image').click();">
-                                <input type="file" id="event_image" name="event_image" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" style="display: none;" onchange="handleImageSelect(this);" />
-                                <div class="dropzone-content">
-                                    <div class="dropzone-icon">
-                                        <svg class="svg-icon-lg" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
-                                    </div>
-                                    <div class="dropzone-text">
-                                        <span class="dropzone-primary">Click to browse or drag and drop event photo</span>
-                                        <span class="dropzone-sub">Supported formats: JPG, JPEG, PNG, WEBP (stored in Supabase Storage)</span>
-                                    </div>
-                                    <button type="button" class="btn btn-secondary btn-sm" onclick="event.stopPropagation(); document.getElementById('event_image').click();">
-                                        <svg class="svg-icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
-                                        Browse Image
-                                    </button>
-                                </div>
-                            </div>
-
-                            <!-- Image Preview Card (Revealed upon selection) -->
-                            <div id="imagePreviewBox" class="image-preview-card" style="display: none;">
-                                <div class="image-preview-thumb-wrapper">
-                                    <img id="imagePreviewThumb" src="" alt="Selected event preview" />
-                                </div>
-                                <div class="image-preview-info">
-                                    <div class="image-preview-name" id="imageFileName">image.png</div>
-                                    <div class="image-preview-meta">
-                                        <span class="image-size-pill" id="imageFileSize">0 KB / 5 MB max</span>
-                                        <span class="image-status-pill">&#10003; Ready for Upload</span>
-                                    </div>
-                                </div>
-                                <button type="button" class="btn-remove-image" onclick="removeSelectedImage();" title="Remove selected image">
-                                    <svg class="svg-icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                                    Remove
-                                </button>
-                            </div>
-                        </div>
-
-                        <button type="submit" class="btn btn-primary" style="width: 100%; padding: 15px; font-size: 15px;">
-                            <svg class="svg-icon" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
-                            Classify Event &amp; Anchor Proof on Ethereum
-                        </button>
-                    </form>
-
-                    <!-- Technical Workflow Stepper -->
-                    <div class="stepper-pipeline">
-                        <div class="stepper-node active">
-                            <span class="stepper-num-badge">1</span>
-                            <span>TF-IDF Vector</span>
-                        </div>
-                        <span class="stepper-arrow">&rarr;</span>
-                        <div class="stepper-node active">
-                            <span class="stepper-num-badge">2</span>
-                            <span>2D CNN Softmax</span>
-                        </div>
-                        <span class="stepper-arrow">&rarr;</span>
-                        <div class="stepper-node active">
-                            <span class="stepper-num-badge">3</span>
-                            <span>SHA-256 Digest</span>
-                        </div>
-                        <span class="stepper-arrow">&rarr;</span>
-                        <div class="stepper-node active">
-                            <span class="stepper-num-badge">4</span>
-                            <span>Solidity Anchor</span>
-                        </div>
-                        <span class="stepper-arrow">&rarr;</span>
-                        <div class="stepper-node active">
-                            <span class="stepper-num-badge">5</span>
-                            <span>Trust Score</span>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        </main>
-
-        <!-- Footer -->
-        <footer class="app-footer">
-            <div class="app-footer-left">
-                <span>TrustChain &bull; Final Year Project</span>
-            </div>
-            <div>
-                Blockchain Event Detection &amp; Trust Verification System
-            </div>
-        </footer>
+    <!-- Telemetry Strip -->
+    <div class="telemetry-strip">
+        <div class="telemetry-cell">
+            <span class="telemetry-label">Inference Engine</span>
+            <span class="telemetry-value">
+                <span class="status-indicator online"></span>
+                2D CNN &bull; TF-IDF 300 Features
+            </span>
+        </div>
+        <div class="telemetry-cell">
+            <span class="telemetry-label">Multi-Modal Vision</span>
+            <span class="telemetry-value" style="color: #22D3EE;">Gemini 3.5 Flash Vision</span>
+        </div>
+        <div class="telemetry-cell">
+            <span class="telemetry-label">Blockchain Anchor</span>
+            <span class="telemetry-value" style="color: #34D399;">Truffle Devnet &bull; Smart Contract Event.sol</span>
+        </div>
+        <div class="telemetry-cell">
+            <span class="telemetry-label">Ledger State</span>
+            <span class="telemetry-value">SHA-256 Non-Repudiation</span>
+        </div>
     </div>
+
+    <!-- Workspace Shell -->
+    <main class="predict-workspace">
+
+        <!-- Result Banner if processed -->
+        {% if data %}
+        <div class="prediction-result-banner {% if is_misinformation %}warning{% elif is_disaster %}disaster{% else %}normal{% endif %}">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; flex-wrap: wrap; gap: 10px;">
+                <div>
+                    <span class="status-pill {% if is_misinformation %}warning{% elif is_disaster %}danger{% else %}success{% endif %}">
+                        {% if is_misinformation %}
+                        Misinformation Neutralized (Media Conflict)
+                        {% elif is_disaster %}
+                        Confirmed Disaster Incident
+                        {% else %}
+                        Verified Normal Event
+                        {% endif %}
+                    </span>
+                    <h2 style="font-size: 18px; font-weight: 800; color: #F1F5F9; margin-top: 8px;">
+                        {% if is_misinformation %}
+                        Disaster Claim Contradicted by Gemini 3.5 Multi-Modal Vision
+                        {% elif is_disaster %}
+                        Disaster Corroborated &amp; Anchored on Ethereum
+                        {% else %}
+                        Normal Event Verified &amp; Recorded
+                        {% endif %}
+                    </h2>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                    <a href="{% url 'ViewTweets' %}" class="btn-tactical secondary" style="font-size: 11px; padding: 6px 12px;">
+                        View Registry &rarr;
+                    </a>
+                    <a href="{% url 'VerifyIntegrity' %}" class="btn-tactical primary" style="font-size: 11px; padding: 6px 12px;">
+                        Verify Proof &rarr;
+                    </a>
+                </div>
+            </div>
+
+            <div style="background: #080E19; border: 1px solid #26364C; border-radius: 6px; padding: 16px; font-size: 13px; line-height: 1.8;">
+                {{ data|safe }}
+            </div>
+        </div>
+        {% endif %}
+
+        {% if error_message %}
+        <div class="status-pill danger" style="width: 100%; padding: 12px 16px; margin-bottom: 20px; font-size: 13px; border-radius: 6px;">
+            <strong>Validation / Ingestion Error:</strong> {{ error_message }}
+        </div>
+        {% endif %}
+
+        <!-- Input Formulation Card -->
+        <div class="tactical-card" style="padding: 24px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #26364C; padding-bottom: 14px; margin-bottom: 20px;">
+                <div>
+                    <h1 style="font-size: 18px; font-weight: 800; color: #F1F5F9; margin-bottom: 2px;">
+                        Real-Time Incident Ingestion &amp; Classification
+                    </h1>
+                    <div style="font-size: 12px; color: #94A3B8;">
+                        Deep Learning 2D CNN inference coupled with Google Gemini Vision and automated Ethereum smart contract anchoring.
+                    </div>
+                </div>
+                <span class="status-pill info">2D CNN &bull; SHA-256</span>
+            </div>
+
+            <form name="f1" method="post" action="{% url 'PredictAction' %}" enctype="multipart/form-data" onsubmit="return validate(this);">
+                {% csrf_token %}
+                <input type="hidden" name="source_dashboard" value="officer">
+                <input type="hidden" name="zone" value="Zone 3 - South Education & Tech (MBU)">
+                <input type="hidden" name="ward" value="Ward 14 - Sree Sainath Nagar">
+                <input type="hidden" name="latitude" value="13.621400">
+                <input type="hidden" name="longitude" value="79.290300">
+
+                <!-- Terminal-Style Textarea -->
+                <div class="terminal-box">
+                    <div class="terminal-header-bar">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span class="status-indicator online"></span>
+                            <span>INCIDENT INGESTION BUFFER</span>
+                        </div>
+                        <span style="color: #22D3EE;">NLTK TOKENIZER &bull; READY</span>
+                    </div>
+                    <textarea id="eventInput" name="t1" class="terminal-textarea" rows="4" placeholder="Enter emergency broadcast text, social media report, sensor alert, or situation feed..."></textarea>
+                </div>
+
+                <!-- Structured Quick Ingestion Scenarios -->
+                <div style="margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-size: 11px; font-weight: 700; color: #94A3B8; text-transform: uppercase; letter-spacing: 0.6px;">
+                        Quick Simulation Payloads
+                    </span>
+                    <span style="font-size: 11px; color: #94A3B8;">Click to load preset text</span>
+                </div>
+
+                <div class="scenario-grid">
+                    <button type="button" class="scenario-card-btn" onclick="setSample('EMERGENCY: Severe thunderstorm warning issued with flash flooding and high winds detected in low-lying sectors.', this)">
+                        <div style="width: 28px; height: 28px; border-radius: 4px; background: rgba(248, 113, 113, 0.15); border: 1px solid rgba(248, 113, 113, 0.3); display: flex; align-items: center; justify-content: center; color: #F87171; flex-shrink: 0;">
+                            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path></svg>
+                        </div>
+                        <div>
+                            <div style="font-size: 12px; font-weight: 700; color: #F1F5F9;">Flash Flood Alert</div>
+                            <div style="font-size: 11px; color: #94A3B8; margin-top: 2px;">Severe thunderstorm warning with high winds...</div>
+                        </div>
+                    </button>
+
+                    <button type="button" class="scenario-card-btn" onclick="setSample('CRITICAL: Category 4 hurricane approaching coastline, mandatory evacuation orders issued immediately.', this)">
+                        <div style="width: 28px; height: 28px; border-radius: 4px; background: rgba(34, 211, 238, 0.15); border: 1px solid rgba(34, 211, 238, 0.3); display: flex; align-items: center; justify-content: center; color: #22D3EE; flex-shrink: 0;">
+                            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M2 12h20"></path></svg>
+                        </div>
+                        <div>
+                            <div style="font-size: 12px; font-weight: 700; color: #F1F5F9;">Coastal Hurricane</div>
+                            <div style="font-size: 11px; color: #94A3B8; margin-top: 2px;">Category 4 hurricane approaching coastline...</div>
+                        </div>
+                    </button>
+
+                    <button type="button" class="scenario-card-btn" onclick="setSample('URGENT: Major commercial structure fire reported downtown, multiple emergency response units deployed.', this)">
+                        <div style="width: 28px; height: 28px; border-radius: 4px; background: rgba(251, 191, 36, 0.15); border: 1px solid rgba(251, 191, 36, 0.3); display: flex; align-items: center; justify-content: center; color: #FBBF24; flex-shrink: 0;">
+                            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                        </div>
+                        <div>
+                            <div style="font-size: 12px; font-weight: 700; color: #F1F5F9;">Urban Fire Hazard</div>
+                            <div style="font-size: 11px; color: #94A3B8; margin-top: 2px;">Major structure fire reported downtown...</div>
+                        </div>
+                    </button>
+
+                    <button type="button" class="scenario-card-btn" onclick="setSample('Enjoying a peaceful sunny morning at the community park, coffee with friends today.', this)">
+                        <div style="width: 28px; height: 28px; border-radius: 4px; background: rgba(52, 211, 153, 0.15); border: 1px solid rgba(52, 211, 153, 0.3); display: flex; align-items: center; justify-content: center; color: #34D399; flex-shrink: 0;">
+                            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path></svg>
+                        </div>
+                        <div>
+                            <div style="font-size: 12px; font-weight: 700; color: #F1F5F9;">Routine Normal Post</div>
+                            <div style="font-size: 11px; color: #94A3B8; margin-top: 2px;">Enjoying peaceful morning at the park...</div>
+                        </div>
+                    </button>
+                </div>
+
+                <!-- Photographic Corroboration Upload -->
+                <div style="margin-bottom: 20px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <span style="font-size: 11px; font-weight: 700; color: #94A3B8; text-transform: uppercase; letter-spacing: 0.6px;">
+                            Photographic Asset (Optional Corroboration)
+                        </span>
+                        <span style="font-size: 11px; color: #22D3EE;">Gemini 3.5 Flash Vision Enabled</span>
+                    </div>
+
+                    <div id="imageUploadError" class="status-pill danger" style="display: none; width: 100%; margin-bottom: 10px; font-size: 12px;"></div>
+
+                    <div id="imageDropZone" class="image-upload-zone" onclick="document.getElementById('event_image').click();">
+                        <input type="file" id="event_image" name="event_image" accept=".jpg,.jpeg,.png,.webp" style="display: none;" onchange="handleImageSelect(this);" />
+                        <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#22D3EE" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin: 0 auto 8px; display: block;">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                            <polyline points="21 15 16 10 5 21"></polyline>
+                        </svg>
+                        <div style="font-weight: 700; color: #F1F5F9; font-size: 13px; margin-bottom: 4px;">Click to browse or drag and drop event photograph</div>
+                        <div style="font-size: 11px; color: #94A3B8;">JPG, JPEG, PNG, WEBP up to 5 MB &bull; Ingested into Supabase Storage</div>
+                    </div>
+
+                    <!-- Client-Side Preview Card -->
+                    <div id="imagePreviewBox" style="display: none; background: #18263A; border: 1px solid #26364C; border-radius: 6px; padding: 12px; align-items: center; gap: 14px; margin-bottom: 20px;">
+                        <img id="imagePreviewThumb" src="" alt="Selected Preview" style="width: 80px; height: 60px; object-fit: cover; border-radius: 4px; border: 1px solid #26364C;">
+                        <div style="flex: 1;">
+                            <div id="imageFileName" style="font-size: 12px; font-weight: 700; color: #F1F5F9;"></div>
+                            <div id="imageFileSize" style="font-size: 11px; color: #94A3B8; margin-top: 2px;"></div>
+                        </div>
+                        <button type="button" class="btn-tactical danger" onclick="removeSelectedImage()" style="font-size: 11px; padding: 6px 10px;">
+                            Remove
+                        </button>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-tactical primary" style="width: 100%; padding: 14px; justify-content: center; font-size: 14px;">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                    </svg>
+                    <span>Classify Event &bull; Anchor Proof on Ethereum Ledger</span>
+                </button>
+            </form>
+
+            <!-- Technical Pipeline Stepper -->
+            <div class="pipeline-stepper">
+                <div class="step-node active">
+                    <span class="step-num">1</span>
+                    <span>TF-IDF Tokenize</span>
+                </div>
+                <span class="step-arrow">&rarr;</span>
+                <div class="step-node active">
+                    <span class="step-num">2</span>
+                    <span>2D CNN Softmax</span>
+                </div>
+                <span class="step-arrow">&rarr;</span>
+                <div class="step-node active">
+                    <span class="step-num">3</span>
+                    <span>Gemini Corroboration</span>
+                </div>
+                <span class="step-arrow">&rarr;</span>
+                <div class="step-node active">
+                    <span class="step-num">4</span>
+                    <span>SHA-256 Digest</span>
+                </div>
+                <span class="step-arrow">&rarr;</span>
+                <div class="step-node active">
+                    <span class="step-num">5</span>
+                    <span>Solidity Anchor</span>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Unified Tactical Footer -->
+    <footer class="tactical-footer">
+        <div>EventTrust &bull; AI Event Detection &amp; Cryptographic Ledger Anchor</div>
+        <div>Truffle Devnet &bull; Smart Contract Event.sol &bull; Inter &amp; JetBrains Mono</div>
+    </footer>
+
+    <!-- 3D Scripts & Motion Engine -->
+    <script src="{% static 'three.min.js' %}"></script>
+    <script src="{% static 'tactical_motion.js' %}"></script>
+    <script src="{% static 'tactical_ambient3d.js' %}"></script>
 </body>
 </html>
